@@ -290,8 +290,8 @@ function denormalize(normalized, min, max) {
  * @returns {ee.Image}
  */
 function tansig(input) {
-	return input.expression('2 / (1 + Exp) - 1', {
+	return input.expression('2 / (1 + E ** (-2 * input)) - 1', {
 		input,
-		Exp: input.multiply(-2).exp()
+		E: Math.E
 	});
 }

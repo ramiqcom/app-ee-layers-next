@@ -4,7 +4,7 @@
 ### Route list
 | Route 				| Description 															| Request body 																																	| Response body 														|
 |---------------|-------------------------------------------|-------------------------------------------------------------------------------|-------------------------------------------|
-| ```/api/layers``` 	| Main route to get tile and download link 	| ```{ geojson: GeoJSON, date: DateArray, layer: LayerId, method: MethodId, satellite: SatelliteId }```	| ```{ tile_url: URL, download_url: URL }```|
+| ```/api/layers``` 	| Main route to get tile and download link 	| ```{ geojson: GeoJSON, date: DateArray, layer: LayerId, method: MethodId, satellite: SatelliteId }```	| ```{ tile_url: URL, download_url: URL, vis: VisObject }```|
 
 ### Type properties
 | Type | Description | Structure | Example |
@@ -14,6 +14,7 @@
 | ```LayerId``` | An id string of the targeted layer | ```StringId``` | ```"lai"```	|
 | ```MethodId```		| An id string of image acquisition method | ```MethodId``` | ```"cloudless"```	|
 | ```SatelliteId```		| An id string of satellite collection to use | ```SatelliteId``` | ```"s2"```	|
+| ```VisObject```		| An object with visualization parameter | ```{ bands: Array.<String>, max: Array.<Number>, min: Array.<Number>, palette: ?Array.<String> }``` | ```"{ bands: ['B4', 'B3', 'B2'], min: [0, 0, 0], max: [0.15, 0.15, 0.15], palette: null }"```	|
 
 ### Layer ID list
 | ID | Description|
@@ -21,6 +22,7 @@
 | ```"true_color"``` | Show the layer using RGB composite |
 | ```"false_color"``` | Show the layer using NIR-Red-Green composite |
 | ```"ndvi"``` | Show the layer using NDVI index |
+| ```"lai"``` | Show the layer using Leaf Area Index |
 
 ### Method ID list
 | ID | Description|

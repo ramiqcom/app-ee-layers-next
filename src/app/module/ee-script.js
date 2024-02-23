@@ -86,7 +86,7 @@ export default async function generateLayer(body) {
 		const { layerImage, bands, palette } = layerSelection(image, satelliteBands, layer);
 
 		// Visualize image
-		const visualized = visualize(layerImage, bands, palette, bounds);
+		const { visualized, vis } = visualize(layerImage, bands, palette, bounds);
 
 		// Get image map id
 		const mapid = await getMapId(visualized, {});
@@ -97,7 +97,8 @@ export default async function generateLayer(body) {
 		// Result
 		const result = {
 			tile_url: mapid.urlFormat,
-			download_url: thumb
+			download_url: thumb,
+			vis: await evaluate(vis)
 		};
 
 		return { result: result, ok: true };
@@ -166,7 +167,7 @@ function getThumbURL(image, bounds) {
  * @param {ee.Image} image
  * @param {Object.<Band>} bands
  * @param {String} layer
- * @returns {{ image: ee.Image, bands: Array.<String> }}
+ * @returns {{ image: ee.Image, bands: Array.<String>, palette: Array.<String> }}
  */
 function layerSelection(image, bands, layer) {
 	// Layer check
@@ -211,14 +212,14 @@ function layerSelection(image, bands, layer) {
  * @param {ee.Image} image
  * @param {[ String, String, String ]} bands
  * @param {ee.Geometry} bounds
- * @returns {ee.Image}
+ * @returns {{ visualized: ee.Image, vis: ee.Dictionary.<{ bands: Array.<String>, min: Array.<Number>, max: Array.<Number>, palette: ?Array.<String> }> }}
  */
 function visualize(image, bands, palette, bounds) {
 	// Calculate the percentile value of the image
 	const percentile = image.select(bands).reduceRegion({
 		geometry: bounds,
 		reducer: ee.Reducer.percentile([0.1, 99.9]),
-		scale: 500,
+		scale: 300,
 		maxPixels: 1e13,
 	});
 
@@ -229,10 +230,10 @@ function visualize(image, bands, palette, bounds) {
 	const min = bands.map(band => percentile.get(`${band}_p0`));
 
 	// Dictionary of visualization
-	const vis = { bands, max, min, palette };
+	const vis = { bands, max, min, palette: palette || null };
 
 	// Visualized image
-	return image.visualize(vis);
+	return { visualized: image.visualize(vis), vis: ee.Dictionary(vis) };
 }
 
 /**
