@@ -2,6 +2,10 @@ import ee from '@google/earthengine';
 import satellites from '../data/satellite.json' assert { type: 'json' };
 import { evaluate } from './ee-script';
 
+export default {
+	lai
+}
+
 //VERSION=3 (auto-converted from 2)
 const degToRad = Math.PI / 180;
 
@@ -10,7 +14,7 @@ const degToRad = Math.PI / 180;
  * @param {ee.Image} image 
  * @returns {ee.Image}
  */
-export function lai(image) {
+function lai(image) {
 	// Bands list
 	const bands = Object.values(satellites.s2.bands);
 

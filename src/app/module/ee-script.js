@@ -1,7 +1,7 @@
 // Import important package
 import 'node-self';
 import ee from '@google/earthengine';
-import { lai } from './layers';
+import Layer from './layers';
 import satellites from '../data/satellite.json' assert { type: 'json' };
 import visual from '../data/visual.json' assert { type: 'json' };
 import { bbox, bboxPolygon } from '@turf/turf';
@@ -184,23 +184,23 @@ function layerSelection(image, bands, layer) {
 	let palette;
 
 	// Switch for layer
-	switch (layer) {
-		case 'ndvi':
+	switch (visProp.type) {
+		case 'indices':
 			layerBands = visProp.bands;
 			const keys = Object.keys(bands);
 			const values = Object.values(bands).map((band, index) => [ keys[index], image.select(band) ]);
 			const dict = Object.fromEntries(values);
-			layerImage = image.expression(visual.ndvi.formula, dict);
+			layerImage = image.expression(visProp.formula, dict);
 			palette = visProp.palette;
 			break;
-		case 'lai':
-			layerBands = visProp.bands;
-			layerImage = lai(image);
-			palette = visProp.palette;
-			break;
-		default:
+		case 'composite':
 			layerBands = visProp.bands.map(name => bands[name]);
 			layerImage = image.select(layerBands);
+			break;
+		default:
+			layerBands = visProp.bands;
+			layerImage = Layer[layer](image);
+			palette = visProp.palette;
 			break;
 	}
 
@@ -218,16 +218,16 @@ function visualize(image, bands, palette, bounds) {
 	// Calculate the percentile value of the image
 	const percentile = image.select(bands).reduceRegion({
 		geometry: bounds,
-		reducer: ee.Reducer.percentile([0.1, 99.9]),
-		scale: 300,
+		reducer: ee.Reducer.percentile([1, 99]),
+		scale: 1000,
 		maxPixels: 1e13,
 	});
 
 	// Get max values
-	const max = bands.map(band => percentile.get(`${band}_p100`));
+	const max = bands.map(band => percentile.get(`${band}_p99`));
 
 	// Get min values
-	const min = bands.map(band => percentile.get(`${band}_p0`));
+	const min = bands.map(band => percentile.get(`${band}_p1`));
 
 	// Dictionary of visualization
 	const vis = { bands, max, min, palette: palette || null };

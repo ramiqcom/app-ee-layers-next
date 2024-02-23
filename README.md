@@ -25,6 +25,7 @@
 | ```"agriculture_false_color"``` | Show the layer using NIR-SWIR1-Red composite |
 | ```"infrared_false_color"``` | Show the layer using NIR-SWIR1-SWIR1 composite |
 | ```"ndvi"``` | Show the layer using NDVI index |
+| ```"ndmi"``` | Show the layer using NDMI index |
 | ```"lai"``` | Show the layer using Leaf Area Index |
 
 ### Method ID list

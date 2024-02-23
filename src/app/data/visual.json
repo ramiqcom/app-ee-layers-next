@@ -1,9 +1,10 @@
 {
-	"true_color": { "bands" : [ "RED", "GREEN", "BLUE" ] },
-	"false_color": { "bands" : [ "NIR", "RED", "GREEN" ] },
-	"enhanced_natural_color": { "bands" : [ "SWIR1", "NIR", "GREEN" ] },
-	"agriculture_false_color": { "bands" : [ "NIR", "SWIR1", "RED" ] },
-	"infrared_false_color": { "bands" : [ "NIR", "SWIR1", "SWIR2" ] },
-	"ndvi": { "bands" : [ "NDVI" ], "formula": "NDVI = (NIR - RED) / (NIR + RED)", "palette": [ "red", "yellow", "green" ] },
+	"true_color": { "bands" : [ "RED", "GREEN", "BLUE" ], "type": "composite" },
+	"false_color": { "bands" : [ "NIR", "RED", "GREEN" ], "type": "composite" },
+	"enhanced_natural_color": { "bands" : [ "SWIR1", "NIR", "GREEN" ], "type": "composite" },
+	"agriculture_false_color": { "bands" : [ "NIR", "SWIR1", "RED" ], "type": "composite" },
+	"infrared_false_color": { "bands" : [ "NIR", "SWIR1", "SWIR2" ], "type": "composite"},
+	"ndvi": { "bands" : [ "NDVI" ], "formula": "NDVI = (NIR - RED) / (NIR + RED)", "palette": [ "red", "yellow", "green" ], "type": "indices" },
+	"ndmi": { "bands" : [ "NDMI" ], "formula": "NDMI = (NIR - SWIR1) / (NIR + SWIR1)", "palette": [ "red", "white", "blue" ], "type": "indices" },
 	"lai": { "bands" : [ "LAI" ], "palette": [ "lightyellow", "green", "darkgreen" ] }
 }
