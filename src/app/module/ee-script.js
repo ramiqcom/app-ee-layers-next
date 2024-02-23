@@ -1,7 +1,7 @@
 // Import important package
 import 'node-self';
 import ee from '@google/earthengine';
-import Layer from './layers';
+import layerCreation from './layers';
 import satellites from '../data/satellite.json' assert { type: 'json' };
 import visual from '../data/visual.json' assert { type: 'json' };
 import { bbox, bboxPolygon } from '@turf/turf';
@@ -94,7 +94,7 @@ export default async function generateLayer(body) {
 		// Result
 		const result = {
 			tile_url: urlFormat,
-			download_url: thumb,
+			thumbnail_url: thumb,
 			vis: await evaluate(vis)
 		};
 
@@ -196,7 +196,7 @@ function layerSelection(image, bands, layer) {
 			break;
 		default:
 			layerBands = visProp.bands;
-			layerImage = Layer[layer](image);
+			layerImage = layerCreation(image, layer);
 			palette = visProp.palette;
 			break;
 	}
@@ -215,16 +215,16 @@ function visualize(image, bands, palette, bounds) {
 	// Calculate the percentile value of the image
 	const percentile = image.select(bands).reduceRegion({
 		geometry: bounds,
-		reducer: ee.Reducer.percentile([0.1, 99.9]),
-		scale: 1000,
+		reducer: ee.Reducer.percentile([1, 99]),
+		scale: 300,
 		maxPixels: 1e13,
 	});
 
 	// Get max values
-	const max = bands.map(band => percentile.get(`${band}_p100`));
+	const max = bands.map(band => percentile.get(`${band}_p99`));
 
 	// Get min values
-	const min = bands.map(band => percentile.get(`${band}_p0`));
+	const min = bands.map(band => percentile.get(`${band}_p1`));
 
 	// Dictionary of visualization
 	const vis = { bands, max, min, palette: palette || null };

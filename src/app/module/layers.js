@@ -1,20 +1,71 @@
+// Import all layers package
 import ee from '@google/earthengine';
 import satellites from '../data/satellite.json' assert { type: 'json' };
-import { evaluate } from './ee-script';
-
-export default {
-	lai
-};
+import shub from '../data/shub.json' assert { type: 'json' }
 
 //VERSION=3 (auto-converted from 2)
 const degToRad = Math.PI / 180;
 
 /**
- * LAI function
- * @param {ee.Image} image 
+ * Function to create layer like sentinel hub
+ * @param {String} id
+ * @param {ee.Image} image
  * @returns {ee.Image}
  */
-function lai(image) {
+export default function layerCreation(image, id){
+	// Normalized bands
+	const normalizedBands = normalizingBands(image);
+
+	// Load properties
+	const { neurons, layer2, denormalizeValue, name } = shub[id];
+
+	// Neurons image
+	const neuronsImage = neurons.map((formula, index) => {
+		const sum = ee.Image().expression(formula, normalizedBands);
+  	return [ `neuron${index + 1}`, tansig(sum) ];
+	});
+
+	// Neurons image as dictiionary
+	const neuronsObject = Object.fromEntries(neuronsImage);
+
+	// Layer2
+	const layer2Image = ee.Image().expression(layer2, neuronsObject);
+
+	// Denormalize image
+	const denormalized = denormalize(layer2Image, denormalizeValue[0], denormalizeValue[1]);
+
+	// Rename image
+	let renamed = denormalized.rename(name);
+
+	// Condition for LAI
+	switch (id) {
+		case 'lai':
+			renamed = renamed.divide(3);
+			break;
+	}
+
+	// Return image
+	return renamed
+}
+
+/**
+ * Normalizing many bands
+ * @param {ee.Image} image
+ * @returns {{
+ * 	b03_norm: ee.Image, 
+ * 	b04_norm: ee.Image, 
+ * 	b05_norm: ee.Image, 
+ * 	b06_norm: ee.Image, 
+ * 	b07_norm: ee.Image, 
+ * 	b8a_norm: ee.Image, 
+ * 	b11_norm: ee.Image, 
+ * 	b12_norm: ee.Image, 
+ * 	viewZen_norm: ee.Image, 
+ * 	sunZen_norm: ee.Image, 
+ * 	relAzim_norm: ee.Image
+ * }}
+ */
+function normalizingBands(image){
 	// Bands list
 	const bands = Object.values(satellites.s2.bands);
 
@@ -45,217 +96,9 @@ function lai(image) {
   const sunZen_norm  = normalize(sunZenithAngles.multiply(degToRad).cos(), 0.342022871159208, 0.936206429175402);
   const relAzim_norm = sunAzimuthAngles.subtract(viewAzimuthMean).multiply(degToRad).cos();
 
-
-	// Neuron
-  const n1 = neuron1(b03_norm, b04_norm, b05_norm, b06_norm, b07_norm, b8a_norm, b11_norm, b12_norm, viewZen_norm, sunZen_norm, relAzim_norm);
-  const n2 = neuron2(b03_norm, b04_norm, b05_norm, b06_norm, b07_norm, b8a_norm, b11_norm, b12_norm, viewZen_norm, sunZen_norm, relAzim_norm);
-  const n3 = neuron3(b03_norm, b04_norm, b05_norm, b06_norm, b07_norm, b8a_norm, b11_norm, b12_norm, viewZen_norm, sunZen_norm, relAzim_norm);
-  const n4 = neuron4(b03_norm, b04_norm, b05_norm, b06_norm, b07_norm, b8a_norm, b11_norm, b12_norm, viewZen_norm, sunZen_norm, relAzim_norm);
-  const n5 = neuron5(b03_norm, b04_norm, b05_norm, b06_norm, b07_norm, b8a_norm, b11_norm, b12_norm, viewZen_norm, sunZen_norm, relAzim_norm);
-
-
-	// Layer data
-  const l2 = layer2(n1, n2, n3, n4, n5);
-
-	// LAI
-  const lai = denormalize(l2, 0.000319182538301, 14.4675094548151);
-
-  return lai.divide(3).rename('LAI');
-}
-
-/**
- * Neuron 1
- * @param {ee.Image} b03_norm
- * @param {ee.Image} b04_norm
- * @param {ee.Image} b05_norm
- * @param {ee.Image} b06_norm
- * @param {ee.Image} b07_norm
- * @param {ee.Image} b8a_norm
- * @param {ee.Image} b11_norm
- * @param {ee.Image} b12_norm
- * @param {ee.Image} viewZen_norm
- * @param {ee.Image} sunZen_norm
- * @param {ee.Image} relAzim_norm
- * @returns {ee.Image}
- */
-function neuron1(b03_norm, b04_norm, b05_norm, b06_norm, b07_norm, b8a_norm, b11_norm, b12_norm, viewZen_norm, sunZen_norm, relAzim_norm) {
-	const sum = ee.Image().expression(`
-		+ 4.96238030555279
-		- 0.023406878966470 * b03_norm
-		+ 0.921655164636366 * b04_norm
-		+ 0.135576544080099 * b05_norm
-		- 1.938331472397950 * b06_norm
-		- 3.342495816122680 * b07_norm
-		+ 0.902277648009576 * b8a_norm
-		+ 0.205363538258614 * b11_norm
-		- 0.040607844721716 * b12_norm
-		- 0.083196409727092 * viewZen_norm
-		+ 0.260029270773809 * sunZen_norm
-		+ 0.284761567218845 * relAzim_norm`, {
+	return {
 		b03_norm, b04_norm, b05_norm, b06_norm, b07_norm, b8a_norm, b11_norm, b12_norm, viewZen_norm, sunZen_norm, relAzim_norm
-	});
-
-  return tansig(sum);
-}
-
-/**
- * Neuron 2
- * @param {ee.Image} b03_norm
- * @param {ee.Image} b04_norm
- * @param {ee.Image} b05_norm
- * @param {ee.Image} b06_norm
- * @param {ee.Image} b07_norm
- * @param {ee.Image} b8a_norm
- * @param {ee.Image} b11_norm
- * @param {ee.Image} b12_norm
- * @param {ee.Image} viewZen_norm
- * @param {ee.Image} sunZen_norm
- * @param {ee.Image} relAzim_norm
- * @returns {ee.Image}
- */
-function neuron2(b03_norm, b04_norm, b05_norm, b06_norm, b07_norm, b8a_norm, b11_norm, b12_norm, viewZen_norm, sunZen_norm, relAzim_norm) {
-	const sum = ee.Image().expression(`
-		+ 1.416008443981500
-		- 0.132555480856684 * b03_norm
-		- 0.139574837333540 * b04_norm
-		- 1.014606016898920 * b05_norm
-		- 1.330890038649270 * b06_norm
-		+ 0.031730624503341 * b07_norm
-		- 1.433583541317050 * b8a_norm
-		- 0.959637898574699 * b11_norm
-		+ 1.133115706551000 * b12_norm
-		+ 0.216603876541632 * viewZen_norm
-		+ 0.410652303762839 * sunZen_norm
-		+ 0.064760155543506 * relAzim_norm`, {
-		b03_norm, b04_norm, b05_norm, b06_norm, b07_norm, b8a_norm, b11_norm, b12_norm, viewZen_norm, sunZen_norm, relAzim_norm
-	});
-
-  return tansig(sum);
-}
-
-/**
- * Neuron 3
- * @param {ee.Image} b03_norm
- * @param {ee.Image} b04_norm
- * @param {ee.Image} b05_norm
- * @param {ee.Image} b06_norm
- * @param {ee.Image} b07_norm
- * @param {ee.Image} b8a_norm
- * @param {ee.Image} b11_norm
- * @param {ee.Image} b12_norm
- * @param {ee.Image} viewZen_norm
- * @param {ee.Image} sunZen_norm
- * @param {ee.Image} relAzim_norm
- * @returns {ee.Image}
- */
-function neuron3(b03_norm, b04_norm, b05_norm, b06_norm, b07_norm, b8a_norm, b11_norm, b12_norm, viewZen_norm, sunZen_norm, relAzim_norm) {
-	const sum = ee.Image().expression(`
-		+ 1.075897047213310
-		+ 0.086015977724868 * b03_norm
-		+ 0.616648776881434 * b04_norm
-		+ 0.678003876446556 * b05_norm
-		+ 0.141102398644968 * b06_norm
-		- 0.096682206883546 * b07_norm
-		- 1.128832638862200 * b8a_norm
-		+ 0.302189102741375 * b11_norm
-		+ 0.434494937299725 * b12_norm
-		- 0.021903699490589 * viewZen_norm
-		- 0.228492476802263 * sunZen_norm
-		- 0.039460537589826 * relAzim_norm`, {
-		b03_norm, b04_norm, b05_norm, b06_norm, b07_norm, b8a_norm, b11_norm, b12_norm, viewZen_norm, sunZen_norm, relAzim_norm
-	});
-
-  return tansig(sum);
-}
-
-/**
- * Neuron 5
- * @param {ee.Image} b03_norm
- * @param {ee.Image} b04_norm
- * @param {ee.Image} b05_norm
- * @param {ee.Image} b06_norm
- * @param {ee.Image} b07_norm
- * @param {ee.Image} b8a_norm
- * @param {ee.Image} b11_norm
- * @param {ee.Image} b12_norm
- * @param {ee.Image} viewZen_norm
- * @param {ee.Image} sunZen_norm
- * @param {ee.Image} relAzim_norm
- * @returns {ee.Image}
- */
-function neuron4(b03_norm, b04_norm, b05_norm, b06_norm, b07_norm, b8a_norm, b11_norm, b12_norm, viewZen_norm, sunZen_norm, relAzim_norm) {
-	const sum = ee.Image().expression(`
-		+ 1.533988264655420
-		- 0.109366593670404 * b03_norm
-		- 0.071046262972729 * b04_norm
-		+ 0.064582411478320 * b05_norm
-		+ 2.906325236823160 * b06_norm
-		- 0.673873108979163 * b07_norm
-		- 3.838051868280840 * b8a_norm
-		+ 1.695979344531530 * b11_norm
-		+ 0.046950296081713 * b12_norm
-		- 0.049709652688365 * viewZen_norm
-		+ 0.021829545430994 * sunZen_norm
-		+ 0.057483827104091 * relAzim_norm`, {
-		b03_norm, b04_norm, b05_norm, b06_norm, b07_norm, b8a_norm, b11_norm, b12_norm, viewZen_norm, sunZen_norm, relAzim_norm
-	});
-
-  return tansig(sum);
-}
-
-/**
- * Neuron 4
- * @param {ee.Image} b03_norm
- * @param {ee.Image} b04_norm
- * @param {ee.Image} b05_norm
- * @param {ee.Image} b06_norm
- * @param {ee.Image} b07_norm
- * @param {ee.Image} b8a_norm
- * @param {ee.Image} b11_norm
- * @param {ee.Image} b12_norm
- * @param {ee.Image} viewZen_norm
- * @param {ee.Image} sunZen_norm
- * @param {ee.Image} relAzim_norm
- * @returns {ee.Image}
- */
-function neuron5(b03_norm, b04_norm, b05_norm, b06_norm, b07_norm, b8a_norm, b11_norm, b12_norm, viewZen_norm, sunZen_norm, relAzim_norm) {
-	const sum = ee.Image().expression(`
-		+ 3.024115930757230
-		- 0.089939416159969 * b03_norm
-		+ 0.175395483106147 * b04_norm
-		- 0.081847329172620 * b05_norm
-		+ 2.219895367487790 * b06_norm
-		+ 1.713873975136850 * b07_norm
-		+ 0.713069186099534 * b8a_norm
-		+ 0.138970813499201 * b11_norm
-		- 0.060771761518025 * b12_norm
-		+ 0.124263341255473 * viewZen_norm
-		+ 0.210086140404351 * sunZen_norm
-		- 0.183878138700341 * relAzim_norm`, {
-		b03_norm, b04_norm, b05_norm, b06_norm, b07_norm, b8a_norm, b11_norm, b12_norm, viewZen_norm, sunZen_norm, relAzim_norm
-	});
-  return tansig(sum);
-}
-
-/**
- * Layer 2
- * @param {ee.Image} neuron1
- * @param {ee.Image} neuron2
- * @param {ee.Image} neuron3
- * @param {ee.Image} neuron4
- * @param {ee.Image} neuron5
- * @returns {ee.Image}
- */
-function layer2(neuron1, neuron2, neuron3, neuron4, neuron5) {
-  return ee.Image().expression(`
-		+ 1.096963107077220
-		- 1.500135489728730 * neuron1
-		- 0.096283269121503 * neuron2
-		- 0.194935930577094 * neuron3
-		- 0.352305895755591 * neuron4
-		+ 0.075107415847473 * neuron5`, {
-		neuron1, neuron2, neuron3, neuron4, neuron5
-	});
+	};
 }
 
 /**
@@ -265,7 +108,7 @@ function layer2(neuron1, neuron2, neuron3, neuron4, neuron5) {
  * @param {Number} max 
  * @returns {ee.Image}
  */
-function normalize(unnormalized, min, max) {
+export function normalize(unnormalized, min, max) {
 	return unnormalized.expression('2 * (unnormalized - min) / (max - min) - 1', {
 		unnormalized,
 		min,
@@ -280,7 +123,7 @@ function normalize(unnormalized, min, max) {
  * @param {Number} max 
  * @returns {ee.Image}
  */
-function denormalize(normalized, min, max) {
+export function denormalize(normalized, min, max) {
 	return normalized.expression('0.5 * (normalized + 1) * (max - min) + min', {
 		normalized,
 		min,
@@ -293,7 +136,7 @@ function denormalize(normalized, min, max) {
  * @param {ee.Image} input 
  * @returns {ee.Image}
  */
-function tansig(input) {
+export function tansig(input) {
 	return input.expression('2 / (1 + E ** (-2 * input)) - 1', {
 		input,
 		E: Math.E
