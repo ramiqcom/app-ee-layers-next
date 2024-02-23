@@ -1,7 +1,7 @@
 // Import important package
 import 'node-self';
 import ee from '@google/earthengine';
-import layers from './layers';
+import { lai } from './layers';
 import satellites from '../data/satellite.json' assert { type: 'json' };
 import visual from '../data/visual.json' assert { type: 'json' };
 import { bbox, bboxPolygon } from '@turf/turf';
@@ -126,7 +126,7 @@ function authenticate() {
  * @param {ee.Element} element
  * @returns {Promise.<any>}
  */
-function evaluate(element) {
+export function evaluate(element) {
 	return new Promise((resolve, reject) => {
 		element.evaluate((data, error) => error ? reject(new Error(error)) : resolve(data));
 	});
@@ -190,7 +190,12 @@ function layerSelection(image, bands, layer) {
 			const values = Object.values(bands).map((band, index) => [ keys[index], image.select(band) ]);
 			const dict = Object.fromEntries(values);
 			layerImage = image.expression(visual.ndvi.formula, dict);
-			palette = visual.ndvi.palette
+			palette = visProp.palette;
+			break;
+		case 'lai':
+			layerBands = visProp.bands;
+			layerImage = lai(image);
+			palette = visProp.palette;
 			break;
 		default:
 			layerBands = visProp.bands.map(name => bands[name]);

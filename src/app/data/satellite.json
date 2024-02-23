@@ -26,6 +26,7 @@
 			"NIR": "B8",
 			"RE4": "B8A",
 			"WV": "B9",
+			"CIRRUS": "B10",
 			"SWIR1": "B11",
 			"SWIR2": "B12"
 		}
