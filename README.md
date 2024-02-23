@@ -10,11 +10,11 @@
 | Type | Description | Structure | Example |
 |------|-------------|-----------|---------|
 | ```GeoJSON``` | GeoJSON type feature collection | ```{ type: "FeatureCollection", properties: Object, features: Array.<Feature> }``` | |
-| ```DateArray``` | Couple of string date in array | ```[ StartDate, EndDate ]```	| ```[ "2023-01-01", "2023-02-28" ]``` |
-| ```LayerId``` | An id string of the targeted layer | ```StringId``` | ```"lai"```	|
-| ```MethodId```		| An id string of image acquisition method | ```MethodId``` | ```"cloudless"```	|
-| ```SatelliteId```		| An id string of satellite collection to use | ```SatelliteId``` | ```"s2"```	|
-| ```VisObject```		| An object with visualization parameter | ```{ bands: Array.<String>, max: Array.<Number>, min: Array.<Number>, palette: ?Array.<String> }``` | ```"{ bands: ['B4', 'B3', 'B2'], min: [0, 0, 0], max: [0.15, 0.15, 0.15], palette: null }"```	|
+| ```DateArray``` | Couple of string date in array | ```[ String, String ]```	| ```[ "2023-01-01", "2023-02-28" ]``` |
+| ```LayerId``` | An id string of the targeted layer | ```String``` | ```"lai"```	|
+| ```MethodId```		| An id string of image acquisition method | ```String``` | ```"cloudless"```	|
+| ```SatelliteId```		| An id string of satellite collection to use | ```String``` | ```"s2"```	|
+| ```VisObject```		| An object with visualization parameter | ```{ bands: Array.<String>, max: Array.<Number>, min: Array.<Number>, palette: ?Array.<String> }``` | ```{ bands: ['B4', 'B3', 'B2'], min: [0, 0, 0], max: [0.15, 0.15, 0.15], palette: null }```	|
 
 ### Layer ID list
 | ID | Description|
