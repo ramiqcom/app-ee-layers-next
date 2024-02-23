@@ -92,7 +92,7 @@ export default async function generateLayer(body) {
 
 		return { result: result, ok: true };
 	} catch (error) {
-		return { result: error.message, ok: false }
+		return { result: { error: error.message }, ok: false }
 	}
 }
 
