@@ -23,9 +23,6 @@ export default async function generateLayer(body) {
 		if (new Date(date[0]).getTime() > new Date(date[1]).getTime()) {
 			throw new Error('Start date should be before the end date');
 		}
-
-		// Authenticate
-		await authenticate();
 		
 		// Date
 		const [ start, end ] = date;
@@ -33,23 +30,23 @@ export default async function generateLayer(body) {
 		// Generate bbox polygon
 		const bboxGeojson = bboxPolygon(bbox(geojson)).geometry;
 
-		// Geometry object
-		const bounds = ee.Geometry(bboxGeojson);
-
 		// Satellite data
 		if (!satellites[satellite]) {
 			throw new Error('That satellite id is not available')
 		}
-		const satelliteProp = satellites[satellite];
 
-		// Satellite collection
-		const satelliteCollection = satelliteProp.collection;
+		// Destructure satellite object properties
+		const {
+			collection: satelliteCollection,
+			cloud: satelliteCloud,
+			bands: satelliteBands
+		} = satellites[satellite];
 
-		// Satellite cloud property
-		const satelliteCloud = satelliteProp.cloud;
+		// Authenticate
+		await authenticate();
 
-		// Bands dictionary for satellite
-		const satelliteBands = satelliteProp.bands;
+		// Geometry object
+		const bounds = ee.Geometry(bboxGeojson);
 
 		// Call and filter the collection
 		const col = ee.ImageCollection(ee.FeatureCollection(satelliteCollection.map(id => ee.ImageCollection(id).filterBounds(bounds).filterDate(start, end))).flatten());
