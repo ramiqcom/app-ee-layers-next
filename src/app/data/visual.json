@@ -1,6 +1,9 @@
 {
 	"true_color": { "bands" : [ "RED", "GREEN", "BLUE" ] },
 	"false_color": { "bands" : [ "NIR", "RED", "GREEN" ] },
+	"enhanced_natural_color": { "bands" : [ "SWIR1", "NIR", "GREEN" ] },
+	"agriculture_false_color": { "bands" : [ "NIR", "SWIR1", "RED" ] },
+	"infrared_false_color": { "bands" : [ "NIR", "SWIR1", "SWIR2" ] },
 	"ndvi": { "bands" : [ "NDVI" ], "formula": "NDVI = (NIR - RED) / (NIR + RED)", "palette": [ "red", "yellow", "green" ] },
-	"lai": { "bands" : [ "LAI" ], "palette": [ "lightyellow", "green" ] }
+	"lai": { "bands" : [ "LAI" ], "palette": [ "lightyellow", "green", "darkgreen" ] }
 }

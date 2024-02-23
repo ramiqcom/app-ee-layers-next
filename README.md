@@ -21,6 +21,9 @@
 |----|------------|
 | ```"true_color"``` | Show the layer using RGB composite |
 | ```"false_color"``` | Show the layer using NIR-Red-Green composite |
+| ```"enhanced_natural_color"``` | Show the layer using SWIR1-NIR-Green composite |
+| ```"agriculture_false_color"``` | Show the layer using NIR-SWIR1-Red composite |
+| ```"infrared_false_color"``` | Show the layer using NIR-SWIR1-SWIR1 composite |
 | ```"ndvi"``` | Show the layer using NDVI index |
 | ```"lai"``` | Show the layer using Leaf Area Index |
 
