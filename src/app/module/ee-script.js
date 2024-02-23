@@ -20,6 +20,10 @@ export default async function generateLayer(body) {
 		// Destructure body
 		const { geojson, date, method, layer, satellite } = body;
 
+		if (new Date(date[0]).getTime() > new Date(date[1]).getTime()) {
+			throw new Error('Start date should be before the end date');
+		}
+
 		// Authenticate
 		await authenticate();
 		
@@ -33,6 +37,9 @@ export default async function generateLayer(body) {
 		const bounds = ee.Geometry(bboxGeojson);
 
 		// Satellite data
+		if (!satellites[satellite]) {
+			throw new Error('That satellite id is not available')
+		}
 		const satelliteProp = satellites[satellite];
 
 		// Satellite collection
@@ -61,9 +68,12 @@ export default async function generateLayer(body) {
 			case 'composite':
 				image = col.map(cloudMask[satellite]).median();
 				break;
-			default:
+			case 'cloudless':
+			case 'latest':
 				image = col.sort(method == 'cloudless' ? satelliteCloud: 'system:time_start').first();
 				break;
+			default:
+				throw new Error('That image generation is not available');
 		}
 
 		// Set image as ee.image
@@ -92,7 +102,7 @@ export default async function generateLayer(body) {
 
 		return { result: result, ok: true };
 	} catch (error) {
-		return { result: { error: error.message }, ok: false }
+		return { result: { message: error.message }, ok: false }
 	}
 }
 
@@ -159,6 +169,11 @@ function getThumbURL(image, bounds) {
  * @returns {{ image: ee.Image, bands: Array.<String> }}
  */
 function layerSelection(image, bands, layer) {
+	// Layer check
+	if (!visual[layer]) {
+		throw new Error('That visualization is is not available')
+	}
+
 	// Selected visualization pro
 	const visProp = visual[layer];
 
