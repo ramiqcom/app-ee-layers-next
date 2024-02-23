@@ -4,7 +4,7 @@
 ### Route list
 | Route 				| Description 															| Request body 																																	| Response body 														|
 |---------------|-------------------------------------------|-------------------------------------------------------------------------------|-------------------------------------------|
-| ```/api/layers``` 	| Main route to get tile and download link 	| ```{ geojson: GeoJSON, date: DateArray, layer: LayerId, method: MethodId, satellite: SatelliteId }```	| ```{ tile_url: URL, download_url: URL, vis: VisObject }```|
+| ```/api/layers``` 	| Main route to get tile and download link 	| ```{ geojson: GeoJSON, date: DateArray, layer: LayerId, method: MethodId, satellite: SatelliteId }```	| ```{ tile_url: URL, thumbnail_url: URL, vis: VisObject }```|
 
 ### Type properties
 | Type | Description | Structure | Example |
@@ -80,16 +80,31 @@
         "2023-05-01",
         "2023-07-31"
     ],
-    "layer": "true_color",
+    "layer": "lai",
     "satellite": "s2",
-    "method": "composite"
+    "method": "cloudless"
 }
 ```
 
 ### Example of response body
 ```
 {
-    "tile_url": "https://earthengine.googleapis.com/v1/projects/earthengine-legacy/maps/d54daaa93b420601b300196dc3e1d6a9-2a76bcda5256b4fae6ca5c0a32b41814/tiles/{z}/{x}/{y}",
-    "download_url": "https://earthengine.googleapis.com/v1/projects/earthengine-legacy/thumbnails/147b93fa05004f9791fc166332f48151-9ff8ad27a1922d71e588992ba4ccbed2:getPixels"
+    "tile_url": "https://earthengine.googleapis.com/v1/projects/earthengine-legacy/maps/b462c5e4f36cb2c89be16f769c85c498-319420f1a231fe1b2baddd6176fe54cf/tiles/{z}/{x}/{y}",
+    "thumbnail_url": "https://earthengine.googleapis.com/v1/projects/earthengine-legacy/thumbnails/f97002008ea4a32c4d333996e789c346-cd052d83ef7460e6069d3f02e921b64e:getPixels",
+    "vis": {
+        "bands": [
+            "LAI"
+        ],
+        "max": [
+            10.406190245008903
+        ],
+        "min": [
+            7.767173036174498
+        ],
+        "palette": [
+            "lightyellow",
+            "green"
+        ]
+    }
 }
 ```
