@@ -6,6 +6,7 @@
 	"infrared_false_color": { "bands" : [ "NIR", "SWIR1", "SWIR2" ], "type": "composite"},
 	"ndvi": { "bands" : [ "NDVI" ], "formula": "NDVI = (NIR - RED) / (NIR + RED)", "palette": [ "red", "orange", "lightyellow", "lightgreen", "green" ], "type": "indices" },
 	"ndmi": { "bands" : [ "NDMI" ], "formula": "NDMI = (NIR - SWIR1) / (NIR + SWIR1)", "palette": [ "red", "orange", "white", "lightskyblue", "blue" ], "type": "indices" },
+	"psri": { "bands" : [ "PSRI" ], "formula": "PSRI = (RED - BLUE) / (RE2)", "palette": [ "green", "lightgreen", "lightyellow", "orange", "red" ], "type": "indices" },
 	"lai": { "bands" : [ "LAI" ], "palette": [ "red", "orange", "lightyellow", "lightgreen", "green" ] },
 	"fapar": { "bands" : [ "FAPAR" ], "palette": [ "red", "orange", "lightyellow", "lightgreen", "green" ] },
 	"fcover": { "bands" : [ "FCOVER" ], "palette": [ "red", "orange", "lightyellow", "lightgreen", "green" ] }
