@@ -4,7 +4,7 @@ import { evaluate } from './ee-script';
 
 export default {
 	lai
-}
+};
 
 //VERSION=3 (auto-converted from 2)
 const degToRad = Math.PI / 180;

@@ -86,14 +86,14 @@ export default async function generateLayer(body) {
 		const { visualized, vis } = visualize(layerImage, bands, palette, bounds);
 
 		// Get image map id
-		const mapid = await getMapId(visualized, {});
+		const { urlFormat } = await getMapId(visualized, {});
 
 		// Thumbnail
 		const thumb = await getThumbURL(visualized, bounds);
 
 		// Result
 		const result = {
-			tile_url: mapid.urlFormat,
+			tile_url: urlFormat,
 			download_url: thumb,
 			vis: await evaluate(vis)
 		};
@@ -215,16 +215,16 @@ function visualize(image, bands, palette, bounds) {
 	// Calculate the percentile value of the image
 	const percentile = image.select(bands).reduceRegion({
 		geometry: bounds,
-		reducer: ee.Reducer.percentile([1, 99]),
+		reducer: ee.Reducer.percentile([0.1, 99.9]),
 		scale: 1000,
 		maxPixels: 1e13,
 	});
 
 	// Get max values
-	const max = bands.map(band => percentile.get(`${band}_p99`));
+	const max = bands.map(band => percentile.get(`${band}_p100`));
 
 	// Get min values
-	const min = bands.map(band => percentile.get(`${band}_p1`));
+	const min = bands.map(band => percentile.get(`${band}_p0`));
 
 	// Dictionary of visualization
 	const vis = { bands, max, min, palette: palette || null };
