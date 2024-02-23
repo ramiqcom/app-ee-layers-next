@@ -1,0 +1,5 @@
+{
+	"true_color": { "bands" : [ "RED", "GREEN", "BLUE" ] },
+	"false_color": { "bands" : [ "NIR", "RED", "GREEN" ] },
+	"ndvi": { "bands" : [ "NDVI" ], "formula": "NDVI = (NIR - RED) / (NIR + RED)", "palette": [ "red", "yellow", "green" ] }
+}

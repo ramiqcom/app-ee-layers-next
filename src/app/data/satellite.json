@@ -1,0 +1,33 @@
+{
+	"landsat": {
+		"collection": [ "LANDSAT/LC08/C02/T1_L2", "LANDSAT/LC09/C02/T1_L2" ],
+		"cloud": "CLOUD_COVER",
+		"bands": {
+			"COASTAL": "SR_B1",
+			"BLUE": "SR_B2",
+			"GREEN": "SR_B3",
+			"RED": "SR_B4",
+			"NIR": "SR_B5",
+			"SWIR1": "SR_B6",
+			"SWIR2": "SR_B7"
+		}
+	},
+	"s2": {
+		"collection": [ "COPERNICUS/S2_SR_HARMONIZED" ],
+		"cloud": "CLOUDY_PIXEL_PERCENTAGE",
+		"bands": {
+			"COASTAL": "B1",
+			"BLUE": "B2",
+			"GREEN": "B3",
+			"RED": "B4",
+			"RE1": "B5",
+			"RE2": "B6",
+			"RE3": "B7",
+			"NIR": "B8",
+			"RE4": "B8A",
+			"WV": "B9",
+			"SWIR1": "B11",
+			"SWIR2": "B12"
+		}
+	}
+}
