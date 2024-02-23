@@ -9,5 +9,6 @@
 	"psri": { "bands" : [ "PSRI" ], "formula": "PSRI = (RED - BLUE) / (RE2)", "palette": [ "green", "lightgreen", "lightyellow", "orange", "red" ], "type": "indices" },
 	"lai": { "bands" : [ "LAI" ], "palette": [ "red", "orange", "lightyellow", "lightgreen", "green" ] },
 	"fapar": { "bands" : [ "FAPAR" ], "palette": [ "red", "orange", "lightyellow", "lightgreen", "green" ] },
-	"fcover": { "bands" : [ "FCOVER" ], "palette": [ "red", "orange", "lightyellow", "lightgreen", "green" ] }
+	"fcover": { "bands" : [ "FCOVER" ], "palette": [ "red", "orange", "lightyellow", "lightgreen", "green" ] },
+	"ccc": { "bands" : [ "CCC" ], "palette": [ "red", "orange", "lightyellow", "lightgreen", "green" ] }
 }

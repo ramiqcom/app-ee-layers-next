@@ -42,6 +42,10 @@ export default function layerCreation(image, id){
 		case 'lai':
 			renamed = renamed.divide(3);
 			break;
+		case 'ccc':
+			const lai = layerCreation(image, 'lai').multiply(3);
+			renamed = renamed.multiply(lai).divide(900);
+			break;
 	}
 
 	// Return image

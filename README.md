@@ -29,7 +29,7 @@
 | ```"lai"``` | Show the layer using Leaf Area Index |
 | ```"fapar"``` | The Fraction of Absorbed Photosynthetically Active Radiation |
 | ```"fcover"``` | Show the layer using Fraction of green Vegetation Cover |
-
+| ```"ccc"``` | Show the layer using Canopy Chlorophyll Content |
 
 ### Method ID list
 | ID | Description|
