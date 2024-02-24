@@ -184,20 +184,36 @@ function layerSelection(image, bands, layer) {
 	switch (visProp.type) {
 		case 'indices':
 			layerBands = visProp.bands;
+			palette = visProp.palette;
+
 			const keys = Object.keys(bands);
 			const values = Object.values(bands).map((band, index) => [ keys[index], image.select(band) ]);
 			const dict = Object.fromEntries(values);
+
 			layerImage = image.expression(visProp.formula, dict);
-			palette = visProp.palette;
 			break;
+
 		case 'composite':
 			layerBands = visProp.bands.map(name => bands[name]);
 			layerImage = image.select(layerBands);
 			break;
+
 		default:
 			layerBands = visProp.bands;
-			layerImage = layerCreation(image, layer);
 			palette = visProp.palette;
+
+			switch (layer) {
+				case 'ccc':
+					const lai = layerCreation(image, 'lai');
+					const cab = layerCreation(image, 'cab');
+					layerImage = cab.multiply(lai).rename(layerBands);
+					break;
+					
+				default:
+					layerImage = layerCreation(image, layer);
+					break;
+			}
+
 			break;
 	}
 

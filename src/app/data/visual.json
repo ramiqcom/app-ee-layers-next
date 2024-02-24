@@ -10,5 +10,6 @@
 	"lai": { "bands" : [ "LAI" ], "palette": [ "red", "orange", "lightyellow", "lightgreen", "green" ] },
 	"fapar": { "bands" : [ "FAPAR" ], "palette": [ "red", "orange", "lightyellow", "lightgreen", "green" ] },
 	"fcover": { "bands" : [ "FCOVER" ], "palette": [ "red", "orange", "lightyellow", "lightgreen", "green" ] },
+	"cab": { "bands" : [ "CAB" ], "palette": [ "red", "orange", "lightyellow", "lightgreen", "green" ] },
 	"ccc": { "bands" : [ "CCC" ], "palette": [ "red", "orange", "lightyellow", "lightgreen", "green" ] }
 }
