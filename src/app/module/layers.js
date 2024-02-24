@@ -17,7 +17,7 @@ export default function layerCreation(image, id){
 	const normalizedBands = normalizingBands(image);
 
 	// Load properties
-	const { neurons, layer2, denormalizeValue, name } = shub[id];
+	const { neurons, layer2, denormalizeValue, name, divide } = shub[id];
 
 	// Neurons image
 	const neuronsImage = neurons.map((formula, index) => {
@@ -37,14 +37,9 @@ export default function layerCreation(image, id){
 	// Rename image
 	let renamed = denormalized.rename(name);
 
-	// Condition for LAI
-	switch (id) {
-		case 'lai':
-			renamed = renamed.divide(3);
-			break;
-		case 'cab':
-			renamed = renamed.divide(300);
-			break;
+	// Condition for image that need to be divided
+	if (divide) {
+		renamed = renamed.divide(divide);
 	}
 
 	// Return image
