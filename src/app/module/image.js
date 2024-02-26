@@ -6,7 +6,7 @@ import { showModal } from '../page';
 
 export default function Image(){
 	// States
-	const { map, geojsonId, geojson, modalRef, setModalText } = useContext(Context); 
+	const { map, geojsonId, geojson, modalRef, setModalText, setVis } = useContext(Context); 
 
 	// Vector visibility
 	const [ vectorVisibility, setVectorVisibility ] = useState(true);
@@ -133,7 +133,7 @@ export default function Image(){
 					});
 
 					// Load the request
-					const { tile_url, thumbnail_url, message } = await request.json();
+					const { tile_url, thumbnail_url, vis, message } = await request.json();
 
 					// If it show error then error
 					if (message) {
@@ -145,6 +145,9 @@ export default function Image(){
 
 					// Set thumbnail url
 					setThumbnailUrl(thumbnail_url);
+
+					// Set vis data
+					setVis(vis);
 
 					// Hide modal
 					showModal(modalRef, false);

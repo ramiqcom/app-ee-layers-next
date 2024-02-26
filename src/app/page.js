@@ -4,6 +4,7 @@ import { useState, createContext, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import basemaps from './data/basemap.json' assert { type: 'json' };
 import Image from './module/image';
+import Legend from './module/legend';
 
 export const Context = createContext();
 
@@ -36,6 +37,9 @@ export default function Home() {
   // Modal ref
   const modalRef = useRef();
 
+  // Visual dictionary
+  const [ vis, setVis ] = useState(undefined);
+
   // States dict
   const dict = {
     map, setMap,
@@ -43,7 +47,8 @@ export default function Home() {
     geojson, setGeojson,
     geojsonId, setGeojsonId,
     modalText, setModalText,
-    modalRef
+    modalRef,
+    vis, setVis
   };
 
 
@@ -55,6 +60,7 @@ export default function Home() {
         </dialog>
         <div id='float'>
           <Image />
+          <Legend />
         </div>
         <MapCanvas />
       </Context.Provider>
@@ -91,9 +97,9 @@ export function showModal(modalRef, show, canClose=false, setText=() => null, te
   }
 
   if (canClose) {
-    modal.onClick = () => modal.close();
+    modal.onclick = () => modal.close();
   } else {
-    modal.onClick = () => null;
+    modal.onclick = () => null;
   };
 
   setText(text);
