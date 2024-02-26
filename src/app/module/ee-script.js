@@ -120,7 +120,7 @@ function authenticate() {
 }
 
 /**
- * Function to evaluate ee object
+ * Function to evaluate ee object to actual JSON/array/string
  * @param {ee.Element} element
  * @returns {Promise.<any>}
  */

@@ -7,6 +7,7 @@
 	"ndvi": { "bands" : [ "NDVI" ], "formula": "NDVI = (NIR - RED) / (NIR + RED)", "palette": [ "red", "orange", "lightyellow", "lightgreen", "green" ], "type": "indices" },
 	"ndmi": { "bands" : [ "NDMI" ], "formula": "NDMI = (NIR - SWIR1) / (NIR + SWIR1)", "palette": [ "red", "orange", "white", "lightskyblue", "blue" ], "type": "indices" },
 	"psri": { "bands" : [ "PSRI" ], "formula": "PSRI = (RED - BLUE) / (RE2)", "palette": [ "green", "lightgreen", "lightyellow", "orange", "red" ], "type": "indices" },
+	"bais2": { "bands" : [ "BAIS2" ], "formula": "BAIS2 = (1 - (((RE2 * RE3 * RE4) / RED) ** 0.5)) * (((SWIR2 - RE4) / ((SWIR2 + RE4) ** 0.5)) + 1)", "palette": [ "green", "lightgreen", "lightyellow", "orange", "red" ], "type": "indices" },
 	"lai": { "bands" : [ "LAI" ], "palette": [ "red", "orange", "lightyellow", "lightgreen", "green" ] },
 	"fapar": { "bands" : [ "FAPAR" ], "palette": [ "red", "orange", "lightyellow", "lightgreen", "green" ] },
 	"fcover": { "bands" : [ "FCOVER" ], "palette": [ "red", "orange", "lightyellow", "lightgreen", "green" ] },

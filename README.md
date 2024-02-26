@@ -29,7 +29,9 @@
 | ```"lai"``` | Show the layer using Leaf Area Index |
 | ```"fapar"``` | The Fraction of Absorbed Photosynthetically Active Radiation |
 | ```"fcover"``` | Show the layer using Fraction of green Vegetation Cover |
+| ```"cab"``` | Show the layer using Leaf Chlorophyll Content |
 | ```"ccc"``` | Show the layer using Canopy Chlorophyll Content |
+| ```"bais2"``` | Show the layer using Burned Area Index for Sentinel 2 |
 
 ### Method ID list
 | ID | Description|
