@@ -10,11 +10,16 @@
   },
   "dependencies": {
     "@google/earthengine": "^0.1.391",
+    "@tmcw/togeojson": "^5.8.1",
     "@turf/turf": "^6.5.0",
+    "epsg": "^0.5.0",
+    "maplibre-gl": "^4.0.2",
     "next": "14.1.0",
     "node-self": "^1.0.2",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "reproject": "^1.2.7",
+    "shpjs": "^4.0.4"
   },
   "devDependencies": {
     "eslint": "^8",

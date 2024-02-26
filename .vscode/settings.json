@@ -1,0 +1,45 @@
+{
+  "[dockercompose]": {
+    "editor.defaultFormatter": "ms-azuretools.vscode-docker"
+  },
+  "[dockerfile]": { "editor.defaultFormatter": "ms-azuretools.vscode-docker" },
+  "[dotenv]": { "editor.defaultFormatter": "foxundermoon.shell-format" },
+  "[ignore]": { "editor.defaultFormatter": "foxundermoon.shell-format" },
+  "[properties]": { "editor.defaultFormatter": "foxundermoon.shell-format" },
+  "[python]": { "editor.defaultFormatter": "ms-python.black-formatter" },
+  "[r]": {
+    "editor.defaultFormatter": "REditorSupport.r",
+    "editor.wordSeparators": "`~!@#%$^&*()-=+[{]}\\|;:'\",<>/?"
+  },
+  "[shellscript]": { "editor.defaultFormatter": "foxundermoon.shell-format" },
+  "[svelte]": { "editor.defaultFormatter": "svelte.svelte-vscode" },
+  "autoDocstring.docstringFormat": "one-line-sphinx",
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "explicit",
+    "source.organizeImports": "explicit"
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnPaste": true,
+  "editor.formatOnSave": true,
+  "editor.formatOnType": true,
+  "editor.renderWhitespace": "trailing",
+  "editor.scrollBeyondLastLine": false,
+  "eslint.validate": ["javascript", "javascriptreact", "svelte"],
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
+  "files.trimTrailingWhitespace": true,
+  "git.autofetch": true,
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "python.analysis.autoImportCompletions": true,
+  "python.analysis.typeCheckingMode": "basic",
+  "python.defaultInterpreterPath": "./.venv/bin/python",
+  "python.languageServer": "Pylance",
+  "r.bracketedPaste": true,
+  "r.plot.useHttpgd": true,
+  "r.rterm.linux": "/usr/local/bin/radian",
+  "r.rterm.mac": "/opt/homebrew/bin/radian",
+  "svelte.enable-ts-plugin": true,
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "workbench.iconTheme": "vscode-icons"
+}
