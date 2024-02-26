@@ -32,6 +32,7 @@
 | ```"cab"``` | Show the layer using Leaf Chlorophyll Content |
 | ```"ccc"``` | Show the layer using Canopy Chlorophyll Content |
 | ```"bais2"``` | Show the layer using Burned Area Index for Sentinel 2 |
+| ```"ndsi"``` | Show the layer using Normalized Difference Snow Index |
 
 ### Method ID list
 | ID | Description|
