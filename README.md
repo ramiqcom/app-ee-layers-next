@@ -24,8 +24,8 @@
 | ```"enhanced_natural_color"``` | Show the layer using SWIR1-NIR-Green composite |
 | ```"agriculture_false_color"``` | Show the layer using NIR-SWIR1-Red composite |
 | ```"infrared_false_color"``` | Show the layer using NIR-SWIR1-SWIR1 composite |
-| ```"ndvi"``` | Show the layer using NDVI index |
-| ```"ndmi"``` | Show the layer using NDMI index |
+| ```"ndvi"``` | Show the layer using Normalized Difference Vegetation index |
+| ```"ndmi"``` | Show the layer using Normalized Difference Moisture Index index |
 | ```"lai"``` | Show the layer using Leaf Area Index |
 | ```"fapar"``` | The Fraction of Absorbed Photosynthetically Active Radiation |
 | ```"fcover"``` | Show the layer using Fraction of green Vegetation Cover |
