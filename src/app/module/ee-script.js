@@ -1,10 +1,11 @@
 // Import important package
 import 'node-self';
+
 import ee from '@google/earthengine';
-import layerCreation from './layers';
+import { bbox, bboxPolygon } from '@turf/turf';
 import satellites from '../data/satellite.json' assert { type: 'json' };
 import visual from '../data/visual.json' assert { type: 'json' };
-import { bbox, bboxPolygon } from '@turf/turf';
+import layerCreation from './layers';
 
 /**
  * Function to generate earth engine layer
@@ -12,111 +13,141 @@ import { bbox, bboxPolygon } from '@turf/turf';
  * @param {FeatureCollection} body.bounds
  * @param {[ String, String ]} body.date
  * @param {String} body.method
- * @param {String} body.layer 
- * @param {Response} res 
+ * @param {String} body.layer
+ * @param {Response} res
  */
 export default async function generateLayer(body) {
-	try {
-		// Destructure body
-		const { geojson, date, method, layer, satellite } = body;
+  try {
+    // Destructure body
+    const { geojson, date, method, layer, satellite } = body;
 
-		if (new Date(date[0]).getTime() > new Date(date[1]).getTime()) {
-			throw new Error('Start date should be before the end date');
-		}
-		
-		// Date
-		const [ start, end ] = date;
+    if (new Date(date[0]).getTime() > new Date(date[1]).getTime()) {
+      throw new Error('Start date should be before the end date');
+    }
 
-		// Generate bbox polygon
-		const bboxGeojson = bboxPolygon(bbox(geojson)).geometry;
+    // Date
+    const [start, end] = date;
 
-		// Satellite data
-		if (!satellites[satellite]) {
-			throw new Error('That satellite id is not available')
-		}
+    // Generate bbox polygon
+    const bboxGeojson = bboxPolygon(bbox(geojson)).geometry;
 
-		// Destructure satellite object properties
-		const {
-			collection: satelliteCollection,
-			cloud: satelliteCloud,
-			bands: satelliteBands
-		} = satellites[satellite];
+    // Satellite data
+    if (!satellites[satellite]) {
+      throw new Error('That satellite id is not available');
+    }
 
-		// Authenticate
-		await authenticate();
+    // Destructure satellite object properties
+    const {
+      collection: satelliteCollection,
+      cloud: satelliteCloud,
+      bands: satelliteBands,
+    } = satellites[satellite];
 
-		// Geometry object
-		const bounds = ee.Geometry(bboxGeojson);
+    // Authenticate
+    await authenticate();
 
-		// Call and filter the collection
-		const col = ee.ImageCollection(ee.FeatureCollection(satelliteCollection.map(id => ee.ImageCollection(id).filterBounds(bounds).filterDate(start, end))).flatten());
+    // Geometry object
+    const bounds = ee.Geometry(bboxGeojson);
 
-		// Empty image
-		let image;
+    // Call and filter the collection
+    const col = ee.ImageCollection(
+      ee
+        .FeatureCollection(
+          satelliteCollection.map((id) =>
+            ee.ImageCollection(id).filterBounds(bounds).filterDate(start, end),
+          ),
+        )
+        .flatten(),
+    );
 
-		// Cloud mask function
-		const cloudMask = {
-			landsat: cloudMaskLandsat,
-			s2: cloudMaskS2
-		};
+    // Empty image
+    let image;
 
-		// Get image based on method
-		switch (method) {
-			case 'composite':
-				image = col.map(cloudMask[satellite]).median();
-				break;
-			case 'cloudless':
-			case 'latest':
-				image = col.sort(method == 'cloudless' ? satelliteCloud: 'system:time_start').first();
-				break;
-			default:
-				throw new Error('That image generation is not available');
-		}
+    // Cloud mask function
+    const cloudMask = {
+      landsat: cloudMaskLandsat,
+      s2: cloudMaskS2,
+    };
 
-		// Set image as ee.image
-		image = ee.Image(image);
+    // Get image based on method
+    switch (method) {
+      case 'composite':
+        image = col.map(cloudMask[satellite]).median();
+        break;
+      case 'cloudless':
+      case 'latest':
+        image = col.sort(method == 'cloudless' ? satelliteCloud : 'system:time_start').first();
+        break;
+      default:
+        throw new Error('That image generation is not available');
+    }
 
-		// Clip the image
-		image = image.clip(bounds.buffer(1e4, 1e4).bounds());
+    // Set image as ee.image
+    image = ee.Image(image);
 
-		// Layer selection
-		const { layerImage, bands, palette } = layerSelection(image, satelliteBands, layer);
+    // Clip the image
+    image = image.clip(bounds.buffer(1e4, 1e4).bounds());
 
-		// Visualize image
-		const { visualized, vis } = visualize(layerImage, bands, palette, bounds);
+    // Scale the image
+    let scaled;
+    switch (satellite) {
+      case 'landsat':
+        scaled = image.select('SR_B.*').multiply(0.0000275).add(-149).toFloat();
+        break;
+      case 's2':
+        scaled = image.select('B.*').multiply(0.00001).toFloat();
+        break;
+    }
+    image = image.addBands(scaled, null, true);
 
-		// Get image map id
-		const { urlFormat } = await getMapId(visualized, {});
+    // Layer selection
+    const { layerImage, bands, palette } = layerSelection(image, satelliteBands, layer);
 
-		// Thumbnail
-		const thumb = await getThumbURL(visualized, bounds);
+    // Visualize image
+    const { visualized, vis } = visualize(layerImage, bands, palette, bounds);
 
-		// Result
-		const result = {
-			tile_url: urlFormat,
-			thumbnail_url: thumb,
-			vis: await evaluate(vis)
-		};
+    // Evaluated visualization to object
+    const evalVis = await evaluate(vis);
 
-		return { result: result, ok: true };
-	} catch (error) {
-		return { result: { message: error.message }, ok: false }
-	}
+    // Get image map id
+    const { urlFormat } = await getMapId(layerImage, evalVis);
+
+    // Thumbnail
+    const thumb = await getThumbURL(visualized, bounds);
+
+    // Result
+    const result = {
+      tile_url: urlFormat,
+      thumbnail_url: thumb,
+      vis: evalVis,
+      image: ee.Serializer.toCloudApiJSON(layerImage),
+    };
+
+    return { result: result, ok: true };
+  } catch (error) {
+    return { result: { message: error.message }, ok: false };
+  }
 }
 
 /**
  * Function to authenticate EE
  * @returns {Promise.<Void>}
  */
-function authenticate() {
-	const key = JSON.parse(process.env.EE_KEY);
-	return new Promise((resolve, reject) => {
-		ee.data.authenticateViaPrivateKey(
-			key,
-			() => ee.initialize(null, null, () => resolve(), error => reject(new Error(error))),
-			error => reject(new Error(error))
-		);
-	});
+export function authenticate() {
+  const key = JSON.parse(process.env.EE_KEY);
+  return new Promise((resolve, reject) => {
+    ee.data.authenticateViaPrivateKey(
+      key,
+      () =>
+        ee.initialize(
+          null,
+          null,
+          () => resolve(),
+          (error) => reject(new Error(error)),
+        ),
+      (error) => reject(new Error(error)),
+    );
+  });
 }
 
 /**
@@ -125,9 +156,9 @@ function authenticate() {
  * @returns {Promise.<any>}
  */
 export function evaluate(element) {
-	return new Promise((resolve, reject) => {
-		element.evaluate((data, error) => error ? reject(new Error(error)) : resolve(data));
-	});
+  return new Promise((resolve, reject) => {
+    element.evaluate((data, error) => (error ? reject(new Error(error)) : resolve(data)));
+  });
 }
 
 /**
@@ -137,9 +168,9 @@ export function evaluate(element) {
  * @returns {Promise.<Object>}
  */
 function getMapId(data, vis) {
-	return new Promise((resolve, reject) => {
-		data.getMapId(vis, (object, error) => error ? reject(new Error(error)) : resolve(object));
-	});
+  return new Promise((resolve, reject) => {
+    data.getMapId(vis, (object, error) => (error ? reject(new Error(error)) : resolve(object)));
+  });
 }
 
 /**
@@ -149,14 +180,16 @@ function getMapId(data, vis) {
  * @returns {Promise.<String>}
  */
 function getThumbURL(image, bounds) {
-	const params = {
-		dimensions: 800,
-		region: bounds,
-	};
+  const params = {
+    dimensions: 800,
+    region: bounds,
+  };
 
-	return new Promise((resolve, reject) => {
-		image.getThumbURL(params, (object, error) => error ? reject(new Error(error)) : resolve(object));
-	});
+  return new Promise((resolve, reject) => {
+    image.getThumbURL(params, (object, error) =>
+      error ? reject(new Error(error)) : resolve(object),
+    );
+  });
 }
 
 /**
@@ -167,57 +200,57 @@ function getThumbURL(image, bounds) {
  * @returns {{ image: ee.Image, bands: Array.<String>, palette: Array.<String> }}
  */
 function layerSelection(image, bands, layer) {
-	// Layer check
-	if (!visual[layer]) {
-		throw new Error('That visualization is is not available')
-	}
+  // Layer check
+  if (!visual[layer]) {
+    throw new Error('That visualization is is not available');
+  }
 
-	// Selected visualization pro
-	const visProp = visual[layer];
+  // Selected visualization pro
+  const visProp = visual[layer];
 
-	// Bands and layers
-	let layerBands;
-	let layerImage;
-	let palette;
+  // Bands and layers
+  let layerBands;
+  let layerImage;
+  let palette;
 
-	// Switch for layer
-	switch (visProp.type) {
-		case 'indices':
-			layerBands = visProp.bands;
-			palette = visProp.palette;
+  // Switch for layer
+  switch (visProp.type) {
+    case 'indices':
+      layerBands = visProp.bands;
+      palette = visProp.palette;
 
-			const keys = Object.keys(bands);
-			const values = Object.values(bands).map((band, index) => [ keys[index], image.select(band) ]);
-			const dict = Object.fromEntries(values);
+      const keys = Object.keys(bands);
+      const values = Object.values(bands).map((band, index) => [keys[index], image.select(band)]);
+      const dict = Object.fromEntries(values);
 
-			layerImage = image.expression(visProp.formula, dict);
-			break;
+      layerImage = image.expression(visProp.formula, dict);
+      break;
 
-		case 'composite':
-			layerBands = visProp.bands.map(name => bands[name]);
-			layerImage = image.select(layerBands);
-			break;
+    case 'composite':
+      layerBands = visProp.bands.map((name) => bands[name]);
+      layerImage = image.select(layerBands);
+      break;
 
-		default:
-			layerBands = visProp.bands;
-			palette = visProp.palette;
+    default:
+      layerBands = visProp.bands;
+      palette = visProp.palette;
 
-			switch (layer) {
-				case 'ccc':
-					const lai = layerCreation(image, 'lai');
-					const cab = layerCreation(image, 'cab');
-					layerImage = cab.multiply(lai).rename(layerBands);
-					break;
-					
-				default:
-					layerImage = layerCreation(image, layer);
-					break;
-			}
+      switch (layer) {
+        case 'ccc':
+          const lai = layerCreation(image, 'lai');
+          const cab = layerCreation(image, 'cab');
+          layerImage = cab.multiply(lai).rename(layerBands);
+          break;
 
-			break;
-	}
+        default:
+          layerImage = layerCreation(image, layer);
+          break;
+      }
 
-	return { layerImage, bands: layerBands, palette }
+      break;
+  }
+
+  return { layerImage, bands: layerBands, palette };
 }
 
 /**
@@ -228,25 +261,25 @@ function layerSelection(image, bands, layer) {
  * @returns {{ visualized: ee.Image, vis: ee.Dictionary.<{ bands: Array.<String>, min: Array.<Number>, max: Array.<Number>, palette: ?Array.<String> }> }}
  */
 function visualize(image, bands, palette, bounds) {
-	// Calculate the percentile value of the image
-	const percentile = image.select(bands).reduceRegion({
-		geometry: bounds,
-		reducer: ee.Reducer.percentile([1, 99]),
-		scale: 300,
-		maxPixels: 1e13,
-	});
+  // Calculate the percentile value of the image
+  const percentile = image.select(bands).reduceRegion({
+    geometry: bounds,
+    reducer: ee.Reducer.percentile([1, 99]),
+    scale: 300,
+    maxPixels: 1e13,
+  });
 
-	// Get max values
-	const max = bands.map(band => percentile.get(`${band}_p99`));
+  // Get max values
+  const max = bands.map((band) => percentile.get(`${band}_p99`));
 
-	// Get min values
-	const min = bands.map(band => percentile.get(`${band}_p1`));
+  // Get min values
+  const min = bands.map((band) => percentile.get(`${band}_p1`));
 
-	// Dictionary of visualization
-	const vis = { bands, max, min, palette: palette || null };
+  // Dictionary of visualization
+  const vis = { bands, max, min, palette: palette || null };
 
-	// Visualized image
-	return { visualized: image.visualize(vis), vis: ee.Dictionary(vis) };
+  // Visualized image
+  return { visualized: image.visualize(vis), vis: ee.Dictionary(vis) };
 }
 
 /**
@@ -255,10 +288,12 @@ function visualize(image, bands, palette, bounds) {
  * @returns {ee.Image}
  */
 function cloudMaskLandsat(image) {
-	image = ee.Image(image);
-	const qa = image.select(['QA_PIXEL']);
-	const mask = ee.ImageCollection([1, 2, 3, 4].map(num => qa.bitwiseAnd(1 << num).eq(0))).reduce(ee.Reducer.allNonZero());
-	return image.select(['SR_B.*', 'ST_B.*']).updateMask(mask);
+  image = ee.Image(image);
+  const qa = image.select(['QA_PIXEL']);
+  const mask = ee
+    .ImageCollection([1, 2, 3, 4].map((num) => qa.bitwiseAnd(1 << num).eq(0)))
+    .reduce(ee.Reducer.allNonZero());
+  return image.select(['SR_B.*', 'ST_B.*']).updateMask(mask);
 }
 
 /**
@@ -267,8 +302,11 @@ function cloudMaskLandsat(image) {
  * @returns {ee.Image}
  */
 function cloudMaskS2(image) {
-	image = ee.Image(image);
-	const scl = image.select('SCL');
-	const mask = scl.eq(3).or(scl.gte(7).and(scl.lte(10))).eq(0);
-	return image.select(['B.*']).updateMask(mask);
+  image = ee.Image(image);
+  const scl = image.select('SCL');
+  const mask = scl
+    .eq(3)
+    .or(scl.gte(7).and(scl.lte(10)))
+    .eq(0);
+  return image.select(['B.*']).updateMask(mask);
 }
