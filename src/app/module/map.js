@@ -1,4 +1,4 @@
-import { bbox, point } from '@turf/turf';
+import { bbox, point as pointGeo } from '@turf/turf';
 import { Map } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useContext, useEffect } from 'react';
@@ -16,6 +16,7 @@ export default function MapCanvas() {
     setModalText,
     modalRef,
     setPoint,
+    point,
   } = useContext(Context);
 
   // When file is drop on map do something
@@ -51,13 +52,13 @@ export default function MapCanvas() {
 
     map.on('mousemove', (e) => {
       const { lng, lat } = e.lngLat;
-      const pointGeojson = point([lng, lat]).geometry;
-      setPoint(pointGeojson);
-    });
+			const pointGeojson = pointGeo([lng, lat]).geometry;
+			setPoint(pointGeojson);
+		});
 
     return () => {
       // Set map to null again
-      map = null;
+			map = null;
     };
   }, []);
 

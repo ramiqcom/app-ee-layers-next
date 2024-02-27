@@ -15,6 +15,8 @@ export default function Image() {
     setImageFunction,
     point,
     imageFunction,
+    setValues,
+    setPoint
   } = useContext(Context);
 
   // Vector visibility
@@ -71,31 +73,37 @@ export default function Image() {
       } else {
         map.getSource(tileId).setTiles([tileUrl]);
       }
+    }
 
-      window.onclick = async () => {
-        try {
-          const body = {
-            point,
-            imageFunction,
-          };
+    window.onclick = async () => {
+      try {
+        setValues('Identifying...');
 
-          const res = await fetch('/api/pixel', {
-            method: 'POST',
-            body: JSON.stringify(body),
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          });
+        const body = {
+          point,
+          imageFunction,
+        };
 
-          const { values, message } = await res.json();
+        const res = await fetch('/api/pixel', {
+          method: 'POST',
+          body: JSON.stringify(body),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
 
-          if (!res.ok) {
-            throw new Error(message);
-          }
-        } catch (error) {
-          
+        const { values, message } = await res.json();
+
+        if (!res.ok) {
+          throw new Error(message);
         }
-      };
+
+        setValues(values);
+      } catch (error) {}
+    };
+
+    return () => {
+      setPoint(undefined);
     }
   }, [tileUrl]);
 

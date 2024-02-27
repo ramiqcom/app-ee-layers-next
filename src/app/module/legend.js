@@ -2,7 +2,7 @@ import { useContext } from 'react';
 import { Context } from '../page';
 
 export default function Legend() {
-  const { vis } = useContext(Context);
+  const { vis, values } = useContext(Context);
 
   return (
     <div
@@ -10,28 +10,32 @@ export default function Legend() {
       id='legend'
       style={{ display: vis ? 'flex' : 'none' }}
     >
-      <div
-        className='flexible big-gap'
-        style={{ display: vis && vis.bands.length == 1 ? 'flex' : 'none' }}
-      >
-        <div style={{ width: '15%', fontSize: 'small', textAlign: 'center' }}>
-          {vis ? parseFloat(vis.min).toFixed(1) : null}
-        </div>
-
+      <div className='flexible vertical big-gap text-center'>
         <div
-          style={{
-            textAlign: 'center',
-            width: '70%',
-            background:
-              vis && vis.bands.length == 1
-                ? `linear-gradient(90deg, ${vis.palette[0]}, ${vis.palette[1]}, ${vis.palette[2]}, ${vis.palette[3]}, ${vis.palette[4]})`
-                : null,
-          }}
-        />
+          className='flexible big-gap'
+          style={{ display: vis && vis.bands.length == 1 ? 'flex' : 'none' }}
+        >
+          <div style={{ width: '10%', textAlign: 'center' }}>
+            {vis ? parseFloat(vis.min).toFixed(1) : null}
+          </div>
 
-        <div style={{ width: '15%', fontSize: 'small', textAlign: 'center' }}>
-          {vis ? parseFloat(vis.max).toFixed(1) : null}
+          <div
+            style={{
+              textAlign: 'center',
+              width: '80%',
+              background:
+                vis && vis.bands.length == 1
+                  ? `linear-gradient(90deg, ${vis.palette[0]}, ${vis.palette[1]}, ${vis.palette[2]}, ${vis.palette[3]}, ${vis.palette[4]})`
+                  : null,
+            }}
+          />
+
+          <div style={{ width: '10%', textAlign: 'center' }}>
+            {vis ? parseFloat(vis.max).toFixed(1) : null}
+          </div>
         </div>
+
+        Value: {values ? JSON.stringify(values) : null}
       </div>
 
       <div

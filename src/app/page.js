@@ -46,6 +46,9 @@ export default function Home() {
   // Coordinate
   const [point, setPoint] = useState(undefined);
 
+  // Values
+  const [values, setValues] = useState(undefined);
+
   // States dict
   const dict = {
     map,
@@ -65,6 +68,8 @@ export default function Home() {
     setImageFunction,
     point,
     setPoint,
+    values,
+    setValues,
   };
 
   return (
