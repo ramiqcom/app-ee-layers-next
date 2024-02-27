@@ -1,6 +1,10 @@
 # ee-layers
 ## API endpoint to generate earth engine tile and download link url
 
+### For Developer to use run the application
+1. Rename ```.env.example```to ```.env```.
+2. Replace value of ```EE_KEY``` using your Google private key JSON.
+
 ### Route list
 | Route 				| Description 															| Request body 																																	| Response body 														|
 |---------------|-------------------------------------------|-------------------------------------------------------------------------------|-------------------------------------------|
