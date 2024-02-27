@@ -52,13 +52,13 @@ export default function MapCanvas() {
 
     map.on('mousemove', (e) => {
       const { lng, lat } = e.lngLat;
-			const pointGeojson = pointGeo([lng, lat]).geometry;
-			setPoint(pointGeojson);
-		});
+      const pointGeojson = pointGeo([lng, lat]).geometry;
+      setPoint(pointGeojson);
+    });
 
     return () => {
       // Set map to null again
-			map = null;
+      map = null;
     };
   }, []);
 

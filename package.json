@@ -2,6 +2,9 @@
   "name": "ee-layers-next",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "^20"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -11,19 +14,19 @@
   },
   "dependencies": {
     "@azure/static-web-apps-cli": "^1.1.6",
+    "@babel/eslint-parser": "^7.23.10",
     "@google/earthengine": "^0.1.391",
     "@tmcw/togeojson": "^5.8.1",
     "@turf/turf": "^6.5.0",
-    "babel": "^6.23.0",
-    "babel-eslint": "^10.1.0",
+    "babel-cli": "^6.26.0",
     "epsg": "^0.5.0",
     "eslint-config-prettier": "^9.1.0",
     "maplibre-gl": "^4.0.2",
     "next": "14.1.0",
     "node-self": "^1.0.2",
     "prettier": "^3.2.5",
-    "react": "^18",
-    "react-dom": "^18",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "reproject": "^1.2.7",
     "shpjs": "^4.0.4"
   },

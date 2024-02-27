@@ -16,7 +16,7 @@ export default function Image() {
     point,
     imageFunction,
     setValues,
-    setPoint
+    setPoint,
   } = useContext(Context);
 
   // Vector visibility
@@ -74,38 +74,41 @@ export default function Image() {
         map.getSource(tileId).setTiles([tileUrl]);
       }
     }
-
-    window.onclick = async () => {
-      try {
-        setValues('Identifying...');
-
-        const body = {
-          point,
-          imageFunction,
-        };
-
-        const res = await fetch('/api/pixel', {
-          method: 'POST',
-          body: JSON.stringify(body),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-
-        const { values, message } = await res.json();
-
-        if (!res.ok) {
-          throw new Error(message);
-        }
-
-        setValues(values);
-      } catch (error) {}
-    };
-
-    return () => {
-      setPoint(undefined);
-    }
   }, [tileUrl]);
+
+  // Use effect when point change
+  useEffect(() => {
+    if (tileUrl) {
+      window.onclick = async () => {
+        try {
+          setValues('...');
+
+          const body = {
+            point,
+            imageFunction,
+          };
+
+          const res = await fetch('/api/pixel', {
+            method: 'POST',
+            body: JSON.stringify(body),
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+
+          const { values, message } = await res.json();
+
+          if (!res.ok) {
+            throw new Error(message);
+          }
+
+          setValues(values);
+        } catch (error) {}
+      };
+    } else {
+      window.onclick = null;
+    }
+  }, [point, tileUrl]);
 
   return (
     <div className='flexible vertical float-panel gap'>

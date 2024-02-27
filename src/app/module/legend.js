@@ -1,8 +1,26 @@
-import { useContext } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { Context } from '../page';
 
 export default function Legend() {
-  const { vis, values } = useContext(Context);
+	const { vis, values } = useContext(Context);
+
+	const [singleValue, setSingleValue] = useState(null);
+	const [multiValue, setMultiValue] = useState([null, null, null]);
+
+	useEffect(() => {
+		if (typeof values == 'string') {
+			setSingleValue(values);
+			setMultiValue(multiValue.map(() => values));
+		}
+
+		if (Object.keys(values).length === 1) {
+			setSingleValue(values[Object.keys(values)[0]])
+		}
+
+		if (Object.keys(values).length > 1) {
+      setMultiValue(multiValue.map((val, index) => values[Object.keys(values)[index]]));
+    }
+	}, [values]);
 
   return (
     <div
@@ -10,11 +28,11 @@ export default function Legend() {
       id='legend'
       style={{ display: vis ? 'flex' : 'none' }}
     >
-      <div className='flexible vertical big-gap text-center'>
-        <div
-          className='flexible big-gap'
-          style={{ display: vis && vis.bands.length == 1 ? 'flex' : 'none' }}
-        >
+      <div
+        className='flexible vertical big-gap text-center'
+        style={{ display: vis && vis.bands.length == 1 ? 'flex' : 'none' }}
+      >
+        <div className='flexible big-gap'>
           <div style={{ width: '10%', textAlign: 'center' }}>
             {vis ? parseFloat(vis.min).toFixed(1) : null}
           </div>
@@ -34,8 +52,7 @@ export default function Legend() {
             {vis ? parseFloat(vis.max).toFixed(1) : null}
           </div>
         </div>
-
-        Value: {values ? JSON.stringify(values) : null}
+        Value: {singleValue}
       </div>
 
       <div
@@ -51,7 +68,7 @@ export default function Legend() {
               border: 'thin solid white',
             }}
           ></div>
-          {vis && vis.bands.length > 1 ? vis.bands[0] : null}
+          {vis && vis.bands.length > 1 ? vis.bands[0] : null}: {multiValue[0]}
         </div>
 
         <div className='flexible small-gap'>
@@ -63,7 +80,7 @@ export default function Legend() {
               border: 'thin solid white',
             }}
           ></div>
-          {vis && vis.bands.length > 1 ? vis.bands[1] : null}
+          {vis && vis.bands.length > 1 ? vis.bands[1] : null}: {multiValue[1]}
         </div>
 
         <div className='flexible small-gap'>
@@ -75,7 +92,7 @@ export default function Legend() {
               border: 'thin solid white',
             }}
           ></div>
-          {vis && vis.bands.length > 1 ? vis.bands[2] : null}
+          {vis && vis.bands.length > 1 ? vis.bands[2] : null}: {multiValue[2]}
         </div>
       </div>
     </div>
