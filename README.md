@@ -13,15 +13,18 @@
 
 ### Route list
 
-| Route         | Description                              | Request body                                                                                      | Response body                                           |
-| ------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
-| `/api/layers` | Main route to get tile and download link | `{ geojson: GeoJSON, date: DateArray, layer: LayerId, method: MethodId, satellite: SatelliteId }` | `{ tile_url: URL, thumbnail_url: URL, vis: VisObject }` |
+| Route         | Description                              | Request body                                                                                                     | Response body                                           |
+| ------------- | ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| `/api/layers` | Main route to get tile and download link | `{ geojson: ?GeoJSON, bounds: ?BBox date: DateArray, layer: LayerId, method: MethodId, satellite: SatelliteId }` | `{ tile_url: URL, thumbnail_url: URL, vis: VisObject }` |
 
 ### Type properties
 
 | Type          | Description                                 | Structure                                                                                       | Example                                                                                 |
 | ------------- | ------------------------------------------- | ----------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| `GeoJSON`     | GeoJSON type feature collection             | `{ type: "FeatureCollection", properties: Object, features: Array.<Feature> }`                  |                                                                                         |
+| `GeoJSON`     | GeoJSON type feature collection             | `{ type: "FeatureCollection", properties: Object, features: Array.<Feature> }`                  |
+|               |
+| `BBox`        | BBox array                                  | `[ West, South, East, North ]`                                                                  | `[0.1, 50.2, 0.2, 50.3]`                                                                |
+|               |
 | `DateArray`   | Couple of string date in array              | `[ String, String ]`                                                                            | `[ "2023-01-01", "2023-02-28" ]`                                                        |
 | `LayerId`     | An id string of the targeted layer          | `String`                                                                                        | `"lai"`                                                                                 |
 | `MethodId`    | An id string of image acquisition method    | `String`                                                                                        | `"cloudless"`                                                                           |
