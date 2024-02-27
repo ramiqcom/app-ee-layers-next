@@ -13,12 +13,12 @@ export default function Legend() {
 			setMultiValue(multiValue.map(() => values));
 		}
 
-		if (Object.keys(values).length === 1) {
+		if (typeof values == 'object' && Object.keys(values).length === 1) {
 			setSingleValue(values[Object.keys(values)[0]])
 		}
 
-		if (Object.keys(values).length > 1) {
-      setMultiValue(multiValue.map((val, index) => values[Object.keys(values)[index]]));
+		if (typeof values == 'object' && Object.keys(values).length > 1) {
+      setMultiValue(multiValue.map((val, index) => values[Object.keys(values)[index]].toFixed(5)));
     }
 	}, [values]);
 

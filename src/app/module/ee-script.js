@@ -19,22 +19,19 @@ import layerCreation from './layers';
 export default async function generateLayer(body) {
   try {
     // Destructure body
-    const { geojson, date, method, layer, satellite } = body;
+    const { bounds: boundary, geojson, date, method, layer, satellite } = body;
 
     if (new Date(date[0]).getTime() > new Date(date[1]).getTime()) {
       throw new Error('Start date should be before the end date');
     }
 
-    // Date
-    const [start, end] = date;
-
-    // Generate bbox polygon
-    const bboxGeojson = bboxPolygon(bbox(geojson)).geometry;
-
     // Satellite data
     if (!satellites[satellite]) {
       throw new Error('That satellite id is not available');
     }
+
+    // Date
+    const [start, end] = date;
 
     // Destructure satellite object properties
     const {
@@ -46,8 +43,22 @@ export default async function generateLayer(body) {
     // Authenticate
     await authenticate();
 
-    // Geometry object
-    const bounds = ee.Geometry(bboxGeojson);
+    // If bounds and geojson exist
+    if (boundary && geojson) {
+      throw new Error('Use either bounds or geojson keys but not both')
+    }
+
+    // If bounds
+    let bounds;
+    if (boundary) {
+      bounds = ee.Geometry.BBox(boundary[0], boundary[1], boundary[2], boundary[3]);
+    } else {
+      // Generate bbox polygon
+      const bboxGeojson = bboxPolygon(bbox(geojson)).geometry;
+
+      // Geometry object
+      bounds = ee.Geometry(bboxGeojson);
+    }
 
     // Call and filter the collection
     const col = ee.ImageCollection(
