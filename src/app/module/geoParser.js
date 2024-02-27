@@ -26,8 +26,6 @@ export default async function geoParser(file, format){
 
 	const geojson = await parser[format](file);
 
-	console.log(geojson)
-
 	return geojson;
 }
 
