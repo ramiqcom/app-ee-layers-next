@@ -10,8 +10,10 @@ import { toWgs84 } from "reproject";
  * @returns {Promise.<FeatureCollection>}
  */
 export default async function geoParser(file, format){
+	format = format.toLowerCase();
+
 	const parser = {
-		zip: parseGeojson,
+		zip: parseShp,
 		kml: parseKml,
 		kmz: parseKml,
 		geojson: parseGeojson,
@@ -23,8 +25,10 @@ export default async function geoParser(file, format){
 	}
 
 	const geojson = await parser[format](file);
-	const reproject = toWgs84(geojson, undefined, epsg);
-	return reproject;
+
+	console.log(geojson)
+
+	return geojson;
 }
 
 /**
@@ -33,7 +37,7 @@ export default async function geoParser(file, format){
  * @returns {Promise.<FeatureCollection>}
  */
 async function parseGeojson(file){
-	return JSON.parse(await file.text());
+	return toWgs84(JSON.parse(await file.text()), undefined, epsg);
 }
 
 /**
