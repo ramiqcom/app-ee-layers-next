@@ -68,7 +68,7 @@ export default function Legend() {
               border: 'thin solid white',
             }}
           ></div>
-          {vis && vis.bands.length > 1 ? vis.bands[0] : null}: {multiValue[0]}
+          {vis && vis.bands.length > 1 ? vis.bands[0] : null}: {multiValue[2]}
         </div>
 
         <div className='flexible small-gap'>
@@ -92,7 +92,7 @@ export default function Legend() {
               border: 'thin solid white',
             }}
           ></div>
-          {vis && vis.bands.length > 1 ? vis.bands[2] : null}: {multiValue[2]}
+          {vis && vis.bands.length > 1 ? vis.bands[2] : null}: {multiValue[0]}
         </div>
       </div>
     </div>
