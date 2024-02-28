@@ -16,7 +16,6 @@ export default function MapCanvas() {
     setModalText,
     modalRef,
     setPoint,
-    point,
   } = useContext(Context);
 
   // When file is drop on map do something

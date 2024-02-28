@@ -2,6 +2,7 @@ import { kml } from '@tmcw/togeojson';
 import epsg from 'epsg';
 import { toWgs84 } from 'reproject';
 import shp from 'shpjs';
+import { area, bbox } from '@turf/turf';
 
 /**
  * Function to parse geo file
@@ -26,6 +27,16 @@ export default async function geoParser(file, format) {
 
   const geojson = await parser[format](file);
 
+  const box = bbox(geojson);
+  if (box[1] > 90 || box[1] < -90) {
+    throw new Error('Data projection is unknown');
+  }
+
+  const areaGeojson = area(geojson);
+  if (areaGeojson / 1e6 > 1_000_000) {
+    throw new Error('Area is too big (> 1 million km2)');
+  }
+
   return geojson;
 }
 
@@ -42,7 +53,8 @@ async function parseGeojson(file) {
  * Function to parse kml
  * @param {Blob} file
  * @returns {Promise.<FeatureCollection>}
- */ async function parseKml(file) {
+ */
+async function parseKml(file) {
   return kml(new DOMParser().parseFromString(await file.text(), 'application/xml'));
 }
 
@@ -50,6 +62,7 @@ async function parseGeojson(file) {
  * Function to parse shp/zip
  * @param {Blob} file
  * @returns {Promise.<FeatureCollection>}
- */ async function parseShp(file) {
+ */
+async function parseShp(file) {
   return await shp(await file.arrayBuffer());
 }

@@ -1,8 +1,8 @@
+import { booleanIntersects } from '@turf/turf';
 import { useContext, useEffect, useState } from 'react';
 import visuals from '../data/visual.json' assert { type: 'json' };
 import { Context, showModal } from '../page';
 import { Select } from './input';
-import { booleanIntersects } from '@turf/turf';
 
 export default function Image() {
   // States
@@ -84,8 +84,8 @@ export default function Image() {
       window.onclick = async () => {
         try {
           // Check if the point is inside the geometry. if not failed it
-          if (!(booleanIntersects(point, geometry))) {
-            throw new Error('Clicked point is not in the image')
+          if (!booleanIntersects(point, geometry)) {
+            throw new Error('Clicked point is not in the image');
           }
 
           setValues('...');
