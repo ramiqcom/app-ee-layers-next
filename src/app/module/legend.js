@@ -14,11 +14,11 @@ export default function Legend() {
 		}
 
 		if (typeof values == 'object' && Object.keys(values).length === 1) {
-			setSingleValue(values[Object.keys(values)[0]])
+			setSingleValue(values[Object.keys(values)[0]].toFixed(3))
 		}
 
 		if (typeof values == 'object' && Object.keys(values).length > 1) {
-      setMultiValue(multiValue.map((val, index) => values[Object.keys(values)[index]].toFixed(5)));
+      setMultiValue(multiValue.map((val, index) => values[Object.keys(values)[index]].toFixed(3)));
     }
 	}, [values]);
 
@@ -34,7 +34,7 @@ export default function Legend() {
       >
         <div className='flexible big-gap'>
           <div style={{ width: '10%', textAlign: 'center' }}>
-            {vis ? parseFloat(vis.min).toFixed(1) : null}
+            {vis ? parseFloat(vis.min).toFixed(2) : null}
           </div>
 
           <div
@@ -49,7 +49,7 @@ export default function Legend() {
           />
 
           <div style={{ width: '10%', textAlign: 'center' }}>
-            {vis ? parseFloat(vis.max).toFixed(1) : null}
+            {vis ? parseFloat(vis.max).toFixed(2) : null}
           </div>
         </div>
         Value: {singleValue}

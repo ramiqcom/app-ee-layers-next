@@ -109,7 +109,7 @@ export default async function generateLayer(body) {
         scaled = image.select('SR_B.*').multiply(0.0000275).add(-149).toFloat();
         break;
       case 's2':
-        scaled = image.select('B.*').multiply(0.00001).toFloat();
+        scaled = image.select('B.*').multiply(0.0001).toFloat();
         break;
     }
     image = image.addBands(scaled, null, true);
