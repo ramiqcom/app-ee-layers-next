@@ -7,7 +7,7 @@ export default function Legend() {
 	const [singleValue, setSingleValue] = useState(null);
 	const [multiValue, setMultiValue] = useState([null, null, null]);
 
-	useEffect(() => {
+  useEffect(() => {
 		if (typeof values == 'string') {
 			setSingleValue(values);
 			setMultiValue(multiValue.map(() => values));
@@ -18,7 +18,7 @@ export default function Legend() {
 		}
 
 		if (typeof values == 'object' && Object.keys(values).length > 1) {
-      setMultiValue(multiValue.map((val, index) => values[Object.keys(values)[index]].toFixed(3)));
+      setMultiValue(vis.bands.map((val, index) => values[val].toFixed(3)));
     }
 	}, [values]);
 
@@ -68,7 +68,7 @@ export default function Legend() {
               border: 'thin solid white',
             }}
           ></div>
-          {vis && vis.bands.length > 1 ? vis.bands[0] : null}: {multiValue[2]}
+          {vis && vis.bands.length > 1 ? vis.bands[0] : null}: {multiValue[0]}
         </div>
 
         <div className='flexible small-gap'>
@@ -92,7 +92,7 @@ export default function Legend() {
               border: 'thin solid white',
             }}
           ></div>
-          {vis && vis.bands.length > 1 ? vis.bands[2] : null}: {multiValue[0]}
+          {vis && vis.bands.length > 1 ? vis.bands[2] : null}: {multiValue[2]}
         </div>
       </div>
     </div>
