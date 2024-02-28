@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import visuals from '../data/visual.json' assert { type: 'json' };
 import { Context, showModal } from '../page';
 import { Select } from './input';
+import { booleanIntersects } from '@turf/turf';
 
 export default function Image() {
   // States
@@ -16,7 +17,8 @@ export default function Image() {
     point,
     imageFunction,
     setValues,
-    setPoint,
+    geometry,
+    setGeometry,
   } = useContext(Context);
 
   // Vector visibility
@@ -81,6 +83,11 @@ export default function Image() {
     if (tileUrl) {
       window.onclick = async () => {
         try {
+          // Check if the point is inside the geometry. if not failed it
+          if (!(booleanIntersects(point, geometry))) {
+            throw new Error('Clicked point is not in the image')
+          }
+
           setValues('...');
 
           const body = {
@@ -103,12 +110,14 @@ export default function Image() {
           }
 
           setValues(values);
-        } catch (error) {}
+        } catch (error) {
+          setValues(error.message);
+        }
       };
     } else {
       window.onclick = null;
     }
-  }, [point, tileUrl]);
+  }, [point, tileUrl, geometry]);
 
   return (
     <div className='flexible vertical float-panel gap'>
@@ -192,7 +201,7 @@ export default function Image() {
             });
 
             // Load the request
-            const { tile_url, thumbnail_url, vis, message, image } = await request.json();
+            const { tile_url, thumbnail_url, vis, message, image, geometry } = await request.json();
 
             // If it show error then error
             if (message) {
@@ -210,6 +219,9 @@ export default function Image() {
 
             // Set image function
             setImageFunction(image);
+
+            // Set image bounds
+            setGeometry(geometry);
 
             // Hide modal
             showModal(modalRef, false);

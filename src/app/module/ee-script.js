@@ -96,8 +96,11 @@ export default async function generateLayer(body) {
     // Set image as ee.image
     image = ee.Image(image);
 
+    // Bounds buffer
+    bounds = bounds.buffer(1e4, 1e4).bounds();
+
     // Clip the image
-    image = image.clip(bounds.buffer(1e4, 1e4).bounds());
+    image = image.clip(bounds);
 
     // Scale the image
     let scaled;
@@ -126,11 +129,15 @@ export default async function generateLayer(body) {
     // Thumbnail
     const thumb = await getThumbURL(visualized, bounds);
 
+    // Geometry
+    const evalGeom = await evaluate(bounds);
+
     // Result
     const result = {
       tile_url: urlFormat,
       thumbnail_url: thumb,
       vis: evalVis,
+      geometry: evalGeom,
       image: ee.Serializer.toCloudApiJSON(layerImage),
     };
 

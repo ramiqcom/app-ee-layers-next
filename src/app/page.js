@@ -49,6 +49,9 @@ export default function Home() {
   // Values
   const [values, setValues] = useState(undefined);
 
+  // Geometry
+  const [geometry, setGeometry] = useState(undefined);
+
   // States dict
   const dict = {
     map,
@@ -70,6 +73,8 @@ export default function Home() {
     setPoint,
     values,
     setValues,
+    geometry,
+    setGeometry,
   };
 
   return (
