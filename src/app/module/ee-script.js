@@ -45,7 +45,7 @@ export default async function generateLayer(body) {
 
     // If bounds and geojson exist
     if (boundary && geojson) {
-      throw new Error('Use either bounds or geojson keys but not both')
+      throw new Error('Use either bounds or geojson keys but not both');
     }
 
     // If bounds
@@ -83,7 +83,8 @@ export default async function generateLayer(body) {
     // Get image based on method
     switch (method) {
       case 'composite':
-        image = col.map(cloudMask[satellite]).median();
+        const colGeom = col.geometry(1e4);
+        image = col.map(cloudMask[satellite]).median().clip(colGeom);
         break;
       case 'cloudless':
       case 'latest':
@@ -97,7 +98,7 @@ export default async function generateLayer(body) {
     image = ee.Image(image);
 
     // Bounds buffer
-    bounds = bounds.buffer(1e4, 1e4).bounds();
+    bounds = bounds.buffer(1e3, 1e4).bounds().intersection(image.geometry(1e4), 1e4);
 
     // Clip the image
     image = image.clip(bounds);
