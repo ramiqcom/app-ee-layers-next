@@ -283,16 +283,16 @@ function visualize(image, bands, palette, bounds) {
   // Calculate the percentile value of the image
   const percentile = image.select(bands).reduceRegion({
     geometry: bounds,
-    reducer: ee.Reducer.percentile([1, 99]),
+    reducer: ee.Reducer.percentile([2, 98]),
     scale: 300,
     maxPixels: 1e13,
   });
 
   // Get max values
-  const max = bands.map((band) => percentile.get(`${band}_p99`));
+  const max = bands.map((band) => percentile.get(`${band}_p98`));
 
   // Get min values
-  const min = bands.map((band) => percentile.get(`${band}_p1`));
+  const min = bands.map((band) => percentile.get(`${band}_p2`));
 
   // Dictionary of visualization
   const vis = { bands, max, min, palette: palette || null };
