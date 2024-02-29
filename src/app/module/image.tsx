@@ -2,7 +2,7 @@ import booleanIntersects from '@turf/boolean-intersects';
 import type { Geometry } from '@turf/turf';
 import type { RasterTileSource } from 'maplibre-gl';
 import { useContext, useEffect, useState } from 'react';
-import visuals from '../data/visual.json' assert { type: 'json' };
+import visuals from '../data/visual.json';
 import type { Option, Options } from './global';
 import { Context } from './global';
 import { Select } from './input';

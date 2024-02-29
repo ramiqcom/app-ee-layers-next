@@ -2,8 +2,8 @@
 import 'node-self';
 
 import ee from '@google/earthengine';
-import satellites from '../data/satellite.json' assert { type: 'json' };
-import shub from '../data/shub.json' assert { type: 'json' };
+import satellites from '../data/satellite.json';
+import shub from '../data/shub.json';
 import type { LayerId } from './global'
 
 //VERSION=3 (auto-converted from 2)

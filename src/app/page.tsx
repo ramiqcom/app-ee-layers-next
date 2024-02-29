@@ -1,6 +1,5 @@
 'use client';
 
-import type { FeatureCollection, Geometry } from '@turf/turf';
 import dynamic from 'next/dynamic';
 import { useRef, useState } from 'react';
 import basemaps from './data/basemap.json';

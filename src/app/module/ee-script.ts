@@ -3,8 +3,8 @@ import 'node-self';
 
 import ee from '@google/earthengine';
 import { bbox, bboxPolygon } from '@turf/turf';
-import satellites from '../data/satellite.json' assert { type: 'json' };
-import visual from '../data/visual.json' assert { type: 'json' };
+import satellites from '../data/satellite.json';
+import visual from '../data/visual.json';
 import type { ImageBody, ImageResult, LayerId, MapId, VisObject } from './global';
 import layerCreation from './layers';
 
