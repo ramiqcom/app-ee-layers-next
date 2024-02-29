@@ -30,12 +30,12 @@ export type GlobalContext = {
   setVis: Dispatch<SetStateAction<Vis>>;
   imageFunction: JSON;
   setImageFunction: Dispatch<SetStateAction<JSON>>;
-  point: Geometry;
-  setPoint: Dispatch<SetStateAction<Geometry>>;
+  point: GeoJSON.Geometry;
+  setPoint: Dispatch<SetStateAction<GeoJSON.Geometry>>;
   values: Record<string, number>;
   setValues: Dispatch<SetStateAction<Record<string, number>>>;
-  geometry: Geometry;
-  setGeometry: Dispatch<SetStateAction<Geometry>>;
+  geometry: GeoJSON.Geometry;
+  setGeometry: Dispatch<SetStateAction<GeoJSON.Geometry>>;
 };
 
 export const Context = createContext<GlobalContext | null>(null);

@@ -48,13 +48,13 @@ export default function Home() {
   const [imageFunction, setImageFunction] = useState<JSON>();
 
   // Coordinate
-  const [point, setPoint] = useState<Geometry>();
+  const [point, setPoint] = useState<GeoJSON.Geometry>();
 
   // Values
   const [values, setValues] = useState<Record<string, number>>();
 
   // Geometry
-  const [geometry, setGeometry] = useState<Geometry>();
+  const [geometry, setGeometry] = useState<GeoJSON.Geometry>();
 
   // States dict
   const dict: GlobalContext = {
