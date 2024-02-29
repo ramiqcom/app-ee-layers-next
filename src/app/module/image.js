@@ -1,7 +1,7 @@
 import { booleanIntersects } from '@turf/turf';
 import { useContext, useEffect, useState } from 'react';
 import visuals from '../data/visual.json' assert { type: 'json' };
-import { Context } from './context';
+import { Context } from './global';
 import { Select } from './input';
 import { showModal } from './utility';
 

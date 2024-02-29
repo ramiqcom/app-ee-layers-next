@@ -1,26 +1,26 @@
-import { useContext, useState, useEffect } from 'react';
-import { Context } from './context';
+import { useContext, useEffect, useState } from 'react';
+import { Context } from './global';
 
 export default function Legend() {
-	const { vis, values } = useContext(Context);
+  const { vis, values } = useContext(Context);
 
-	const [singleValue, setSingleValue] = useState(null);
-	const [multiValue, setMultiValue] = useState([null, null, null]);
+  const [singleValue, setSingleValue] = useState(null);
+  const [multiValue, setMultiValue] = useState([null, null, null]);
 
   useEffect(() => {
-		if (typeof values == 'string') {
-			setSingleValue(values);
-			setMultiValue(multiValue.map(() => values));
-		}
+    if (typeof values == 'string') {
+      setSingleValue(values);
+      setMultiValue(multiValue.map(() => values));
+    }
 
-		if (typeof values == 'object' && Object.keys(values).length === 1) {
-			setSingleValue(values[Object.keys(values)[0]].toFixed(3))
-		}
+    if (typeof values == 'object' && Object.keys(values).length === 1) {
+      setSingleValue(values[Object.keys(values)[0]].toFixed(3));
+    }
 
-		if (typeof values == 'object' && Object.keys(values).length > 1) {
+    if (typeof values == 'object' && Object.keys(values).length > 1) {
       setMultiValue(vis.bands.map((val, index) => values[val].toFixed(3)));
     }
-	}, [values]);
+  }, [values]);
 
   return (
     <div

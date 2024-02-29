@@ -1,13 +1,13 @@
 'use client';
 
-import { FeatureCollection, Geometry } from '@turf/turf';
+import type { FeatureCollection, Geometry } from '@turf/turf';
 import dynamic from 'next/dynamic';
 import { useRef, useState } from 'react';
 import basemaps from './data/basemap.json';
+import { Context, Option, Vis } from './module/global';
 import Image from './module/image';
 import Legend from './module/legend';
-import { Context } from './module/context';
-import type { Option, Vis } from './module/type';
+import type { GlobalContext } from './module/global';
 
 /**
  * Import map component after ssr
@@ -24,40 +24,40 @@ const MapCanvas = dynamic(() => import('./module/map'), {
  */
 export default function Home() {
   // Map state
-  const [map, setMap] = useState<maplibregl.Map>(undefined);
+  const [map, setMap] = useState<maplibregl.Map>();
 
   // Map style
   const [mapStyle, setMapStyle] = useState<Option>(basemaps[0]);
 
   // Geojson
-  const [geojson, setGeojson] = useState<FeatureCollection>(undefined);
+  const [geojson, setGeojson] = useState<GeoJSON.GeoJSON>();
 
   // Geojson id
-  const [geojsonId, setGeojsonId] = useState<String>('vector');
+  const [geojsonId, setGeojsonId] = useState<string>('vector');
 
   // Modal text
-  const [modalText, setModalText] = useState<String>(undefined);
+  const [modalText, setModalText] = useState<string>();
 
   // Modal ref
   const modalRef = useRef();
 
   // Visual dictionary
-  const [vis, setVis] = useState<Vis>(undefined);
+  const [vis, setVis] = useState<Vis>();
 
   // Image function
-  const [imageFunction, setImageFunction] = useState<JSON>(undefined);
+  const [imageFunction, setImageFunction] = useState<JSON>();
 
   // Coordinate
-  const [point, setPoint] = useState<Geometry>(undefined);
+  const [point, setPoint] = useState<Geometry>();
 
   // Values
-  const [values, setValues] = useState<Record<string, number>>(undefined);
+  const [values, setValues] = useState<Record<string, number>>();
 
   // Geometry
-  const [geometry, setGeometry] = useState<Geometry>(undefined);
+  const [geometry, setGeometry] = useState<Geometry>();
 
   // States dict
-  const dict = {
+  const dict: GlobalContext = {
     map,
     setMap,
     mapStyle,
