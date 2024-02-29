@@ -2,22 +2,12 @@
 
 import { FeatureCollection, Geometry } from '@turf/turf';
 import dynamic from 'next/dynamic';
-import { createContext, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import basemaps from './data/basemap.json';
 import Image from './module/image';
 import Legend from './module/legend';
-
-// Types
-export type Options = Array<{ value: any; label: string }>;
-export type Option = { value: any; label: string };
-export type Vis = {
-  bands: Array<string>;
-  min: Array<number>;
-  max: Array<number>;
-  palette?: Array<string>;
-};
-
-export const Context = createContext<Object>({});
+import { Context } from './module/context';
+import type { Option, Vis } from './module/type';
 
 /**
  * Import map component after ssr

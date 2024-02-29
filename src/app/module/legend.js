@@ -1,5 +1,5 @@
 import { useContext, useState, useEffect } from 'react';
-import { Context } from '../page';
+import { Context } from './context';
 
 export default function Legend() {
 	const { vis, values } = useContext(Context);
