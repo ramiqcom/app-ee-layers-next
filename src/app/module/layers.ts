@@ -4,17 +4,18 @@ import 'node-self';
 import ee from '@google/earthengine';
 import satellites from '../data/satellite.json' assert { type: 'json' };
 import shub from '../data/shub.json' assert { type: 'json' };
+import type { LayerId } from './global'
 
 //VERSION=3 (auto-converted from 2)
 const degToRad = Math.PI / 180;
 
 /**
- * Function to create layer like sentinel hub
- * @param {String} id
- * @param {ee.Image} image
- * @returns {ee.Image}
+ * Function to generate image
+ * @param image
+ * @param id
+ * @returns
  */
-export default function layerCreation(image, id) {
+export default function layerCreation(image: ee.Image, id: LayerId): ee.Image {
   // Normalized bands
   const normalizedBands = normalizingBands(image);
 
@@ -49,23 +50,11 @@ export default function layerCreation(image, id) {
 }
 
 /**
- * Normalizing many bands
- * @param {ee.Image} image
- * @returns {{
- * 	b03_norm: ee.Image,
- * 	b04_norm: ee.Image,
- * 	b05_norm: ee.Image,
- * 	b06_norm: ee.Image,
- * 	b07_norm: ee.Image,
- * 	b8a_norm: ee.Image,
- * 	b11_norm: ee.Image,
- * 	b12_norm: ee.Image,
- * 	viewZen_norm: ee.Image,
- * 	sunZen_norm: ee.Image,
- * 	relAzim_norm: ee.Image
- * }}
+ * Function to normalize many image
+ * @param image
+ * @returns
  */
-function normalizingBands(image) {
+function normalizingBands(image: ee.Image): Record<string, ee.Image> {
   // Bands list
   const bands = Object.values(satellites.s2.bands);
 
@@ -128,13 +117,13 @@ function normalizingBands(image) {
 }
 
 /**
- * Normalize
- * @param {ee.Image} unnormalized
- * @param {Number} min
- * @param {Number} max
- * @returns {ee.Image}
+ * Function to normalize image
+ * @param unnormalized
+ * @param min
+ * @param max
+ * @returns
  */
-export function normalize(unnormalized, min, max) {
+export function normalize(unnormalized: ee.Image, min: number, max: number): ee.Image {
   return unnormalized.expression('2 * (unnormalized - min) / (max - min) - 1', {
     unnormalized,
     min,
@@ -143,13 +132,13 @@ export function normalize(unnormalized, min, max) {
 }
 
 /**
- * Denormalize
- * @param {ee.Image} normalized
- * @param {Number} min
- * @param {Number} max
- * @returns {ee.Image}
+ * Function to denormalize image
+ * @param normalized
+ * @param min
+ * @param max
+ * @returns
  */
-export function denormalize(normalized, min, max) {
+export function denormalize(normalized: ee.Image, min: number, max: number): ee.Image {
   return normalized.expression('0.5 * (normalized + 1) * (max - min) + min', {
     normalized,
     min,
@@ -158,11 +147,11 @@ export function denormalize(normalized, min, max) {
 }
 
 /**
- * Calculate Tansig
- * @param {ee.Image} input
- * @returns {ee.Image}
+ * Function to tansig an ee.Image
+ * @param input
+ * @returns
  */
-export function tansig(input) {
+export function tansig(input: ee.Image): ee.Image {
   return input.expression('2 / (1 + E ** (-2 * input)) - 1', {
     input,
     E: Math.E,

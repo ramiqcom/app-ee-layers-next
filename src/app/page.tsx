@@ -4,7 +4,7 @@ import type { FeatureCollection, Geometry } from '@turf/turf';
 import dynamic from 'next/dynamic';
 import { useRef, useState } from 'react';
 import basemaps from './data/basemap.json';
-import { Context, Option, Vis } from './module/global';
+import { Context, Option, VisObject } from './module/global';
 import Image from './module/image';
 import Legend from './module/legend';
 import type { GlobalContext } from './module/global';
@@ -42,7 +42,7 @@ export default function Home() {
   const modalRef = useRef();
 
   // Visual dictionary
-  const [vis, setVis] = useState<Vis>();
+  const [vis, setVis] = useState<VisObject>();
 
   // Image function
   const [imageFunction, setImageFunction] = useState<JSON>();

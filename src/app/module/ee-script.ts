@@ -5,18 +5,17 @@ import ee from '@google/earthengine';
 import { bbox, bboxPolygon } from '@turf/turf';
 import satellites from '../data/satellite.json' assert { type: 'json' };
 import visual from '../data/visual.json' assert { type: 'json' };
+import type { ImageBody, ImageResult, LayerId, MapId, VisObject } from './global';
 import layerCreation from './layers';
 
 /**
- * Function to generate earth engine layer
- * @param {Object} body
- * @param {FeatureCollection} body.bounds
- * @param {[ String, String ]} body.date
- * @param {String} body.method
- * @param {String} body.layer
- * @param {Response} res
+ * Server function to generate earth engine information
+ * @param body
+ * @returns
  */
-export default async function generateLayer(body) {
+export default async function generateLayer(
+  body: ImageBody,
+): Promise<{ result?: ImageResult | { message: string }; ok: boolean }> {
   try {
     // Destructure body
     const { bounds: boundary, geojson, date, method, layer, satellite } = body;
@@ -49,7 +48,7 @@ export default async function generateLayer(body) {
     }
 
     // If bounds
-    let bounds;
+    let bounds: ee.Geometry;
     if (boundary) {
       bounds = ee.Geometry.BBox(boundary[0], boundary[1], boundary[2], boundary[3]);
     } else {
@@ -61,7 +60,7 @@ export default async function generateLayer(body) {
     }
 
     // Call and filter the collection
-    const col = ee.ImageCollection(
+    const col: ee.ImageCollection = ee.ImageCollection(
       ee
         .FeatureCollection(
           satelliteCollection.map((id) =>
@@ -72,7 +71,7 @@ export default async function generateLayer(body) {
     );
 
     // Empty image
-    let image;
+    let image: ee.Image;
 
     // Cloud mask function
     const cloudMask = {
@@ -83,7 +82,7 @@ export default async function generateLayer(body) {
     // Get image based on method
     switch (method) {
       case 'composite':
-        const colGeom = col.geometry(1e4);
+        const colGeom: ee.Geometry = col.geometry(1e4);
         image = col.map(cloudMask[satellite]).median().clip(colGeom);
         break;
       case 'cloudless':
@@ -104,7 +103,7 @@ export default async function generateLayer(body) {
     image = image.clip(bounds);
 
     // Scale the image
-    let scaled;
+    let scaled: ee.Image;
     switch (satellite) {
       case 'landsat':
         scaled = image.select('SR_B.*').multiply(0.0000275).add(-149).toFloat();
@@ -119,10 +118,10 @@ export default async function generateLayer(body) {
     const { layerImage, bands, palette } = layerSelection(image, satelliteBands, layer);
 
     // Visualize image
-    const { visualized, vis } = visualize(layerImage, bands, palette, bounds);
+    const { visualized, vis } = visualize(layerImage, bands, bounds, palette);
 
     // Evaluated visualization to object
-    const evalVis = await evaluate(vis);
+    const evalVis: VisObject = await evaluate(vis);
 
     // Get image map id
     const { urlFormat } = await getMapId(layerImage, evalVis);
@@ -131,10 +130,10 @@ export default async function generateLayer(body) {
     const thumb = await getThumbURL(visualized, bounds);
 
     // Geometry
-    const evalGeom = await evaluate(bounds);
+    const evalGeom: GeoJSON.Geometry = await evaluate(bounds);
 
     // Result
-    const result = {
+    const result: ImageResult = {
       tile_url: urlFormat,
       thumbnail_url: thumb,
       vis: evalVis,
@@ -150,9 +149,9 @@ export default async function generateLayer(body) {
 
 /**
  * Function to authenticate EE
- * @returns {Promise.<Void>}
+ * @returns
  */
-export function authenticate() {
+export function authenticate(): Promise<void> {
   const key = JSON.parse(process.env.EE_KEY);
   return new Promise((resolve, reject) => {
     ee.data.authenticateViaPrivateKey(
@@ -162,43 +161,48 @@ export function authenticate() {
           null,
           null,
           () => resolve(),
-          (error) => reject(new Error(error)),
+          (error: string) => reject(new Error(error)),
         ),
-      (error) => reject(new Error(error)),
+      (error: string) => reject(new Error(error)),
     );
   });
 }
 
 /**
- * Function to evaluate ee object to actual JSON/array/string
- * @param {ee.Element} element
- * @returns {Promise.<any>}
+ * Function evaluate ee object to readable object
+ * @param element
+ * @returns
  */
-export function evaluate(element) {
+export function evaluate(element: ee<any>): Promise<any> {
   return new Promise((resolve, reject) => {
-    element.evaluate((data, error) => (error ? reject(new Error(error)) : resolve(data)));
+    element.evaluate((data: any, error: any) => (error ? reject(new Error(error)) : resolve(data)));
   });
 }
 
 /**
- * Function to generate image url
- * @param {ee.Image | ee.FeatureCollection} data
- * @param {Object | ee.Dictionary} vis
- * @returns {Promise.<Object>}
+ * Function to get tile url from ee object
+ * @param data
+ * @param vis
+ * @returns
  */
-function getMapId(data, vis) {
+function getMapId(
+  data: ee.Image | ee.ImageCollection | ee.FeatureCollection | ee.Geometry,
+  vis: VisObject,
+): Promise<MapId> {
   return new Promise((resolve, reject) => {
-    data.getMapId(vis, (object, error) => (error ? reject(new Error(error)) : resolve(object)));
+    data.getMapId(vis, (object: MapId, error: string) =>
+      error ? reject(new Error(error)) : resolve(object),
+    );
   });
 }
 
 /**
- * Function to generate image thumbnail url
- * @param {ee.Image} image
- * @param {ee.Geometry} bounds
- * @returns {Promise.<String>}
+ * Function to get thumbnail url
+ * @param image
+ * @param bounds
+ * @returns
  */
-function getThumbURL(image, bounds) {
+function getThumbURL(image: ee.Image, bounds: ee.Geometry): Promise<string> {
   const params = {
     dimensions: 800,
     region: bounds,
@@ -212,13 +216,13 @@ function getThumbURL(image, bounds) {
 }
 
 /**
- * Function to generate image layer
- * @param {ee.Image} image
- * @param {Object.<Band>} bands
- * @param {String} layer
- * @returns {{ image: ee.Image, bands: Array.<String>, palette: Array.<String> }}
+ * Function to generate layer of image based on id
+ * @param image
+ * @param bands
+ * @param layer
+ * @returns
  */
-function layerSelection(image, bands, layer) {
+function layerSelection(image: ee.Image, bands: Record<string, string>, layer: LayerId) {
   // Layer check
   if (!visual[layer]) {
     throw new Error('That visualization is is not available');
@@ -228,9 +232,9 @@ function layerSelection(image, bands, layer) {
   const visProp = visual[layer];
 
   // Bands and layers
-  let layerBands;
-  let layerImage;
-  let palette;
+  let layerBands: Array<string>;
+  let layerImage: ee.Image;
+  let palette: Array<string>;
 
   // Switch for layer
   switch (visProp.type) {
@@ -273,13 +277,19 @@ function layerSelection(image, bands, layer) {
 }
 
 /**
- * Function to visualize image
- * @param {ee.Image} image
- * @param {[ String, String, String ]} bands
- * @param {ee.Geometry} bounds
- * @returns {{ visualized: ee.Image, vis: ee.Dictionary.<{ bands: Array.<String>, min: Array.<Number>, max: Array.<Number>, palette: ?Array.<String> }> }}
+ * Function to visualize image based on visual parameter
+ * @param image
+ * @param bands
+ * @param bounds
+ * @param palette
+ * @returns
  */
-function visualize(image, bands, palette, bounds) {
+function visualize(
+  image: ee.Image,
+  bands: Array<string>,
+  bounds: ee.Geometry,
+  palette?: Array<string>,
+): { visualized: ee.Image; vis: ee.Dictionary } {
   // Calculate the percentile value of the image
   const percentile = image.select(bands).reduceRegion({
     geometry: bounds,
@@ -302,11 +312,11 @@ function visualize(image, bands, palette, bounds) {
 }
 
 /**
- * Function for cloudmasking landsat
- * @param {ee.Image} image
- * @returns {ee.Image}
+ * Function to cloud mask landsat oli image
+ * @param image
+ * @returns
  */
-function cloudMaskLandsat(image) {
+function cloudMaskLandsat(image: ee.Image): ee.Image {
   image = ee.Image(image);
   const qa = image.select(['QA_PIXEL']);
   const mask = ee
@@ -316,11 +326,11 @@ function cloudMaskLandsat(image) {
 }
 
 /**
- * Function for cloudmasking sentinel2
- * @param {ee.Image} image
- * @returns {ee.Image}
+ * Function to cloud mask sentinel-2 image
+ * @param image
+ * @returns
  */
-function cloudMaskS2(image) {
+function cloudMaskS2(image: ee.Image): ee.Image {
   image = ee.Image(image);
   const scl = image.select('SCL');
   const mask = scl
