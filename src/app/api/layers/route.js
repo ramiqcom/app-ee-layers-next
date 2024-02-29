@@ -1,5 +1,5 @@
 // Import main function to generate the url
-import generateLayer from '@/app/module/ee-script';
+import generateLayer from '../../module/ee-script';
 import { NextResponse } from 'next/server';
 
 /**

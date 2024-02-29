@@ -6,7 +6,6 @@ import { createContext, useRef, useState } from 'react';
 import basemaps from './data/basemap.json';
 import Image from './module/image';
 import Legend from './module/legend';
-import ee from '@google/earthengine';
 
 // Types
 export type Options = Array<{ value: any; label: string }>;
@@ -56,7 +55,7 @@ export default function Home() {
   const [vis, setVis] = useState<Vis>(undefined);
 
   // Image function
-  const [imageFunction, setImageFunction] = useState<ee.Image>(undefined);
+  const [imageFunction, setImageFunction] = useState<JSON>(undefined);
 
   // Coordinate
   const [point, setPoint] = useState<Geometry>(undefined);

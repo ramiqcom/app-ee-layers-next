@@ -1,4 +1,4 @@
-import { authenticate, evaluate } from '@/app/module/ee-script';
+import { authenticate, evaluate } from '../../module/ee-script';
 import * as ee from '@google/earthengine';
 import { NextResponse } from 'next/server';
 
