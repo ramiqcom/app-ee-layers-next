@@ -2,7 +2,8 @@ import { bbox, point as pointGeo } from '@turf/turf';
 import { Map } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { useContext, useEffect } from 'react';
-import { Context, showModal } from '../page';
+import { Context } from '../page';
+import { showModal } from './utility';
 import geoParser from './geoParser';
 
 export default function MapCanvas() {

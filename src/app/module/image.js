@@ -1,8 +1,9 @@
 import { booleanIntersects } from '@turf/turf';
 import { useContext, useEffect, useState } from 'react';
 import visuals from '../data/visual.json' assert { type: 'json' };
-import { Context, showModal } from '../page';
+import { Context } from '../page';
 import { Select } from './input';
+import { showModal } from './utility';
 
 export default function Image() {
   // States
