@@ -1,5 +1,5 @@
+import booleanIntersects from '@turf/boolean-intersects';
 import type { Geometry } from '@turf/turf';
-import { booleanIntersects } from '@turf/turf';
 import type { RasterTileSource } from 'maplibre-gl';
 import { useContext, useEffect, useState } from 'react';
 import visuals from '../data/visual.json' assert { type: 'json' };
