@@ -8,9 +8,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "swa start",
+    "start": "next start",
     "lint": "next lint",
-    "init": "swa init"
+    "init": "next init"
   },
   "dependencies": {
     "@azure/static-web-apps-cli": "^1.1.6",
