@@ -48,7 +48,7 @@ name: Deploy to Cloud Run from Source Action
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "master" ]
 
 env:
   CREDENTIALS: '${{ secrets.GCP_CREDENTIALS }}' # TODO: update Google Cloud project id
