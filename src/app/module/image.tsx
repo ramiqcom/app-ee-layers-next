@@ -188,9 +188,13 @@ export default function Image() {
           try {
             // Show modal
             showModal(modalRef, true, false, setModalText, 'Processsing layer...');
+            // Flatten the polygon
+            const polygon = flatten(geojson as FeatureCollection);
+            const dissolved = dissolve(polygon);
+
             const body = {
               date: [startDate, endDate],
-              geojson,
+              geojson: dissolved,
               method: 'cloudless',
               layer: layer.value,
               satellite: 's2',
