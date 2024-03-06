@@ -1,6 +1,6 @@
 # ee-layers
 
-## API endpoint to generate earth engine tile and download link url
+## Frone End App to use API endpoint to generate earth engine tile and download link url
 
 ### Demo App to use the API
 
