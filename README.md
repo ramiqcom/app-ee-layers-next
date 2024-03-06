@@ -4,7 +4,8 @@
 
 ### Demo App to use the API
 
-[https://app-ee-layers-next.vercel.app/](https://app-ee-layers-next.vercel.app/)
+Vercel: [https://app-ee-layers-next.vercel.app/](https://app-ee-layers-next.vercel.app/)
+Cloud Run: [https://app-ee-layers-next-2ogpjauwta-ez.a.run.app](https://app-ee-layers-next-2ogpjauwta-ez.a.run.app)
 
 ### For Developer to use run the application
 
