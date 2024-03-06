@@ -1,40 +1,14 @@
-import 'node-self';
-
-import * as ee from '@google/earthengine';
+// Import main function to generate the url
 import { NextResponse } from 'next/server';
-import { authenticate, evaluate } from '../../module/ee-script';
 
-export async function POST(req: Request) {
-  try {
-    // Parse the point data
-    const { point, imageFunction }: { point: GeoJSON.Geometry; imageFunction: JSON } =
-      await req.json();
+export async function POST(request: Request) {
+  const request2 = await fetch(`${process.env.API}/api/pixel`, {
+    method: 'POST',
+    body: await request.text(),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
 
-    // Authenticate
-    await authenticate();
-
-    // Geometry data
-    const geometry: ee.Geometry = ee.Geometry(point);
-
-    // Image data
-    const image: ee.Image = ee.Image(ee.Deserializer.fromCloudApiJSON(imageFunction));
-
-    // Reduce
-    const reduce: ee.Dictionary = image.reduceRegion({
-      scale: 10,
-      maxPixels: 1e13,
-      reducer: ee.Reducer.first(),
-      geometry: geometry,
-    });
-
-    // Evaluated value
-    const values: Record<string, number> = await evaluate(reduce);
-
-    // Return it
-    return NextResponse.json({ values }, { status: 200 });
-  } catch ({ message }) {
-    const errMessage: string = message;
-    // Return it
-    return NextResponse.json({ message: errMessage }, { status: 404 });
-  }
+  return NextResponse.json(await request2.json(), { status: request2.ok ? 200 : 404 });
 }

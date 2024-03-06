@@ -1,10 +1,9 @@
 import booleanIntersects from '@turf/boolean-intersects';
-import type { Geometry } from '@turf/turf';
-import type { RasterTileSource } from 'maplibre-gl';
+import { FeatureCollection, Geometry, dissolve, flatten } from '@turf/turf';
+import { RasterTileSource } from 'maplibre-gl';
 import { useContext, useEffect, useState } from 'react';
 import visuals from '../data/visual.json';
-import type { Option, Options } from './global';
-import { Context } from './global';
+import { Context, Option, Options } from './global';
 import { Select } from './input';
 import { showModal } from './utility';
 
@@ -189,7 +188,6 @@ export default function Image() {
           try {
             // Show modal
             showModal(modalRef, true, false, setModalText, 'Processsing layer...');
-
             const body = {
               date: [startDate, endDate],
               geojson,
