@@ -7,6 +7,10 @@ import { Context, Option, Options } from './global';
 import { Select } from './input';
 import { showModal } from './utility';
 
+/**
+ * 
+ * @returns Image processing panel
+ */
 export default function Image() {
   // States
   const {
