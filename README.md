@@ -4,12 +4,12 @@
 
 ### Demo App to use the API
 
-[https://ee-layers-next.vercel.app/](https://ee-layers-next.vercel.app/)
+[https://app-ee-layers-next.vercel.app/](https://app-ee-layers-next.vercel.app/)
 
 ### For Developer to use run the application
 
 1. Rename `.env.example`to `.env`.
-2. Replace value of `EE_KEY` using your Google private key JSON.
+2. Replace value of `API` using your API url endpoint.
 
 ### Route list
 
