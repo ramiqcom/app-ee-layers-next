@@ -1,21 +1,12 @@
 'use client';
 
-import dynamic from 'next/dynamic';
 import { useRef, useState } from 'react';
 import basemaps from './data/basemap.json';
+import type { GlobalContext } from './module/global';
 import { Context, Option, VisObject } from './module/global';
 import Image from './module/image';
 import Legend from './module/legend';
-import type { GlobalContext } from './module/global';
-
-/**
- * Import map component after ssr
- * @returns Map react component
- */
-const MapCanvas = dynamic(() => import('./module/map'), {
-  ssr: false,
-  loading: () => <Loading />,
-});
+import MapCanvas from './module/map';
 
 /**
  * Main react component to export
