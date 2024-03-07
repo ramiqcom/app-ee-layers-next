@@ -1,9 +1,9 @@
 import { kml } from '@tmcw/togeojson';
+import type { Feature } from '@turf/turf';
+import { area, bbox } from '@turf/turf';
 import epsg from 'epsg';
 import { toWgs84 } from 'reproject';
 import shp from 'shpjs';
-import { area, bbox } from '@turf/turf';
-import type { Feature } from '@turf/turf';
 
 /**
  * Function to parse geodata to geojson
@@ -47,7 +47,13 @@ export default async function geoParser(file: Blob, format: string): Promise<Geo
  * @returns
  */
 async function parseGeojson(file: Blob): Promise<GeoJSON.GeoJSON> {
-  return toWgs84(JSON.parse(await file.text()), undefined, epsg);
+  const geojson = JSON.parse(await file.text());
+  try {
+    const reprojected = toWgs84(geojson, undefined, epsg);
+    return reprojected;
+  } catch (err) {
+    return geojson;
+  }
 }
 
 /**
