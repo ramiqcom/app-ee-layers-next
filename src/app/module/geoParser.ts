@@ -26,7 +26,12 @@ export default async function geoParser(file: Blob, format: string): Promise<Geo
     throw new Error('This format is not supported');
   }
 
-  const geojson: GeoJSON.GeoJSON = await parser[format](file);
+  let geojson: GeoJSON.GeoJSON = await parser[format](file);
+
+  try {
+    const reprojected = toWgs84(geojson, undefined, epsg);
+    geojson = reprojected;
+  } catch (err) {}
 
   const box = bbox(geojson);
   if (box[1] > 90 || box[1] < -90) {
@@ -47,13 +52,7 @@ export default async function geoParser(file: Blob, format: string): Promise<Geo
  * @returns
  */
 async function parseGeojson(file: Blob): Promise<GeoJSON.GeoJSON> {
-  const geojson = JSON.parse(await file.text());
-  try {
-    const reprojected = toWgs84(geojson, undefined, epsg);
-    return reprojected;
-  } catch (err) {
-    return geojson;
-  }
+  return JSON.parse(await file.text());
 }
 
 /**
