@@ -8,7 +8,7 @@ import { Select } from './input';
 import { showModal } from './utility';
 
 /**
- * 
+ *
  * @returns Image processing panel
  */
 export default function Image() {
@@ -71,7 +71,7 @@ export default function Image() {
         map.addSource(tileId, {
           type: 'raster',
           tiles: [tileUrl],
-          tileSize: 256,
+          tileSize: 128,
         });
 
         map.addLayer({
